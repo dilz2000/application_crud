@@ -1,0 +1,101 @@
+<div class="container">
+  <div class="card shadow">
+    <div class="card-body">
+      <!-- Header -->
+      <div class="d-flex justify-content-between align-items-center">
+        <h2 class="text-white">User Panel</h2>
+        <button class="btn btn-danger logout-btn" (click)="logout()" title="Logout">
+          <i class="fas fa-sign-out-alt"></i>
+        </button>
+      </div>
+
+      <hr>
+
+      <!-- User Details -->
+      <div *ngIf="user$ | async as user">
+        <h4><strong>Hi</strong> {{ user.name }}</h4>
+        <h3 class="text-primary"><strong>Grade {{ user.grade || '-' }} - {{ user.subject || '-' }} - Class {{ user.class || '-' }}</strong></h3>
+
+        <hr>
+
+        <!-- Test Results -->
+        <h5>Test Results</h5>
+        <div class="table-responsive">
+          <table class="table table-bordered text-center">
+            <thead>
+              <tr>
+                <th *ngFor="let test of testNames">{{ test }}</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td *ngFor="let test of testNames">{{ testResults[test] || '-' }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <hr>
+
+        <!-- Attendance Section -->
+        <h5>Attendance</h5>
+        <div class="row">
+          <div class="col-md-3">
+            <label for="yearInput" class="form-label">Select Year</label>
+            <input type="number" class="form-control" id="yearInput" [(ngModel)]="attendanceYear" (change)="updateYearFilter('attendance', attendanceYear)">
+          </div>
+        </div>
+
+        <div class="table-responsive" style="overflow-x: auto;">
+          <table class="table table-bordered text-center">
+            <thead>
+              <tr>
+                <th *ngFor="let date of filteredAttendanceDates">{{ date }}</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td *ngFor="let date of filteredAttendanceDates">
+                  <button class="btn btn-sm"
+                          [ngClass]="user.attendance?.[date] ? 'btn-success' : 'btn-danger'">
+                    {{ user.attendance?.[date] ? '✔' : '❌' }}
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <hr>
+
+        <!-- Payments Section -->
+        <h5>Payments</h5>
+        <div class="row">
+          <div class="col-md-3">
+            <label for="paymentYearInput" class="form-label">Select Year</label>
+            <input type="number" class="form-control" id="paymentYearInput" [(ngModel)]="paymentYear" (change)="updateYearFilter('payments', paymentYear)">
+          </div>
+        </div>
+
+        <div class="table-responsive">
+          <table class="table table-bordered text-center">
+            <thead>
+              <tr>
+                <th *ngFor="let month of months">{{ month }}</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td *ngFor="let month of months">
+                  <span [ngClass]="user.payments?.[paymentYear]?.[month] === 'Paid' ? 'badge bg-success' : 'text-muted'">
+                    {{ user.payments?.[paymentYear]?.[month] || '-' }}
+                  </span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

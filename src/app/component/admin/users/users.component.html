@@ -1,0 +1,79 @@
+<div class="card shadow">
+  <div class="card-body">
+    <div class="row mb-4">
+      <div class="col-md-3">
+        <input type="date" class="form-control" [(ngModel)]="newDate">
+      </div>
+      <div class="col-md-2">
+        <button class="btn btn-primary" (click)="addDate()">Add Date</button>
+      </div>
+      <div class="col-md-3">
+        <label for="yearInput" class="form-label">Select Year</label>
+        <input type="number" class="form-control" id="yearInput" [(ngModel)]="yearInput" (change)="visibleStartIndex = 0">
+      </div>
+      <div class="col-md-4">
+        <input type="text" class="form-control" [formControl]="searchQuery" placeholder="Search students">
+      </div>
+    </div>
+
+    <!-- Table Wrapper with Horizontal Scroll for Dates -->
+    <div class="table-container">
+      <table class="table table-bordered">
+        <thead>
+          <tr>
+            <th class="fixed-column">UserID</th>
+            <th class="fixed-column">Name</th>
+            <th *ngFor="let date of visibleDates" class="scrollable-column">
+              {{ date }}
+              <div class="dropdown-container d-inline-block ms-2">
+                <button class="btn btn-light btn-sm" (click)="toggleDropdown(date, $event)">
+                  <i class="fas fa-ellipsis-v"></i>
+                </button>
+                <div *ngIf="isDropdownOpen === date" class="dropdown-menu show">
+                  <button class="dropdown-item text-primary" (click)="modifyDate(date)">
+                    <i class="fas fa-edit me-2"></i> Modify
+                  </button>
+                  <button class="dropdown-item text-danger" (click)="deleteDate(date)">
+                    <i class="fas fa-trash me-2"></i> Delete
+                  </button>
+                </div>
+              </div>
+            </th>
+            <th class="fixed-column">Total Present</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let user of (users$ | async | filter: (searchQuery.value || ''))">
+            <td class="fixed-column">{{ user.sid }}</td>
+            <td class="fixed-column">{{ user.name }}</td>
+            <td *ngFor="let date of visibleDates" class="scrollable-column">
+              <button class="btn btn-sm"
+                      [ngClass]="user.attendance?.[date] ? 'btn-success' : 'btn-danger'"
+                      (click)="toggleAttendance(user, date)">
+                {{ user.attendance?.[date] ? '✔' : '❌' }}
+              </button>
+            </td>
+            <td class="fixed-column">
+              <span class="badge bg-info">{{ userAttendanceTotal[user.sid] || 0 }}</span>
+            </td>
+          </tr>
+          <tr class="table-warning">
+            <td colspan="2"><strong>Total Attendance:</strong></td>
+            <td *ngFor="let date of visibleDates" class="scrollable-column">
+              <strong>{{ attendanceSummary[date] || 0 }}</strong>
+            </td>
+            <td class="fixed-column">
+              <strong>{{ totalAttendance }}</strong>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Scrollable Navigation -->
+    <div class="scroll-container">
+      <button class="btn btn-outline-primary btn-sm me-2" (click)="scrollLeft()">←</button>
+      <button class="btn btn-outline-primary btn-sm" (click)="scrollRight()">→</button>
+    </div>
+  </div>
+</div>

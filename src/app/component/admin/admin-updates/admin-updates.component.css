@@ -1,0 +1,74 @@
+.tab-content {
+  padding-top: 1rem;
+}
+
+.nav-tabs .nav-link {
+  cursor: pointer;
+}
+
+.nav-tabs .nav-link.active {
+  font-weight: 500;
+}
+
+.card {
+  border-radius: 0.5rem;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.card-header {
+  background-color: #f8f9fa;
+}
+
+.img-thumbnail {
+  object-fit: contain;
+}
+
+table img.img-thumbnail {
+  width: auto;
+  max-width: 100px;
+}
+
+/* Improves spacing in the forms */
+.form-label {
+  font-weight: 500;
+  margin-bottom: 0.25rem;
+}
+
+/* Add some hover effect to table rows */
+.table-hover tbody tr:hover {
+  background-color: rgba(0, 123, 255, 0.05);
+}
+
+/* Style for required field markers */
+.form-label::after {
+  content: "*";
+  color: red;
+  margin-left: 3px;
+}
+
+/* Except for non-required fields */
+label:not([for="newsContent"]):not([for="newsDate"]):not([for="newsImage"]):not([for="offerImage"])::after {
+  content: "";
+}
+
+/* Improve button styling */
+.btn-primary {
+  background-color: #0d6efd;
+  border-color: #0d6efd;
+}
+
+.btn-primary:hover {
+  background-color: #0b5ed7;
+  border-color: #0a58ca;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .card-body {
+    padding: 1rem;
+  }
+  
+  .table th, .table td {
+    padding: 0.5rem;
+  }
+}

@@ -1,0 +1,29 @@
+<div class="container-fluid min-vh-100" style="background-color: #4C6EF5;">
+    <div class="d-flex justify-content-center align-items-center min-vh-100">
+      <div class="card shadow-lg p-4" style="border-radius: 20px; background-color: #EAF0FF; width: 600px;">
+        <!-- Welcome Title -->
+        <div class="text-center mb-4">
+          <h1 class="text-danger fw-bold">Welcome</h1>
+        </div>
+  
+        <!-- Email Sent Message -->
+        <div class="text-center mb-4" style="font-size: 1.2rem">
+          <p class="text-muted">
+            A link has been sent to your registered email. Please verify it.
+          </p>
+        </div>
+  
+        <!-- Go to Login Button -->
+        <div class="d-grid">
+          <button
+            type="button"
+            class="btn btn-primary btn-lg"
+            (click)="navigateToLogin()"
+          >
+            Go to Login
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  

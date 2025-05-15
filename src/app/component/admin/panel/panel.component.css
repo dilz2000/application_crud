@@ -1,0 +1,34 @@
+.admin-container {
+    display: flex;
+    min-height: 100vh;
+  }
+  
+  .sidebar {
+    width: 250px;
+    position: fixed;
+    height: 100%;
+    box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+  }
+  
+  .main-content {
+    margin-left: 250px;
+    flex: 1;
+    background-color: #f8f9fa;
+    min-height: 100vh;
+  }
+  
+  .nav-link {
+    padding: 10px 15px;
+    margin: 5px 0;
+    border-radius: 5px;
+    transition: all 0.3s ease;
+  }
+  
+  .nav-link:hover {
+    background-color: rgba(255,255,255,0.1);
+  }
+  
+  .active {
+    background-color: #0d6efd;
+    color: white !important;
+  }

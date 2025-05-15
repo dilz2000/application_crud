@@ -1,0 +1,23 @@
+.table-container {
+    overflow-x: auto;
+    max-width: 100%;
+    white-space: nowrap;
+  }
+  
+  .fixed-column {
+    position: sticky;
+    left: 0;
+    background: white;
+    z-index: 2;
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+  }
+  
+  .scrollable-column {
+    min-width: 120px;
+  }
+  
+  .scroll-container {
+    text-align: center;
+    margin-top: 10px;
+  }
+  

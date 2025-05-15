@@ -1,0 +1,151 @@
+<div class="container-fluid min-vh-100 d-flex flex-column" style="background-color: #EAF0FF;">
+  <!-- Header -->
+  <header class="bg-primary py-3">
+    <div class="container">
+      <div class="d-flex justify-content-between align-items-center">
+        <div class="d-flex align-items-center">
+          <img src="assets/logo.png" alt="Academix Logo" style="width: 50px; height: 50px;">
+          <h3 class="text-white fw-bold mb-0 ms-3">Academix</h3>
+        </div>
+        <div>
+          <a routerLink="/login" class="btn btn-light me-2">Login</a>
+          <a routerLink="/register" class="btn btn-light">Register</a>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <div class="flex-grow-1">
+    <!-- Welcome Section -->
+    <div class="container text-center py-5">
+      <h1 class="fw-bold text-dark mb-4" style="font-size: 2.5rem;">Welcome to Our Portal</h1>
+      <p class="text-muted mb-5" style="font-size: 1.2rem;">
+        Welcome! Here, you can find all the information you need to connect with us directly. Whether you have inquiries, feedback, or need assistance, we're here to help. Our dedicated team is eager to address your questions and provide support.
+
+        Explore our contact details, including our physical address, email, and phone number, to reach out conveniently. Stay connected with us for updates on our latest news, events, and exclusive offers. Your thoughts and suggestions are valuable to us, and we look forward to hearing from you. Don't hesitate to get in touch; we're just a message away!
+      </p>
+    </div>
+
+    <!-- Tabs Navigation -->
+    <div class="container mb-4">
+      <div class="d-flex justify-content-center">
+        <div class="card shadow-sm" style="border-radius: 20px; overflow: hidden; width: 300px;">
+          <div class="d-flex">
+            <button 
+              class="btn btn-light flex-grow-1 py-3 fw-bold" 
+              [class.active]="activeTab === 'news'"
+              [style.border-bottom]="activeTab === 'news' ? '3px solid #4C6EF5' : 'none'"
+              (click)="setActiveTab('news')"
+            >
+              Latest News
+            </button>
+            <button 
+              class="btn btn-light flex-grow-1 py-3 fw-bold" 
+              [class.active]="activeTab === 'offers'"
+              [style.border-bottom]="activeTab === 'offers' ? '3px solid #4C6EF5' : 'none'"
+              (click)="setActiveTab('offers')"
+            >
+              Special Offers
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Latest News Section -->
+    <div class="container mb-5" *ngIf="activeTab === 'news'">
+      <h2 class="text-center fw-bold mb-4">Latest News</h2>
+      
+      <div class="row g-4">
+        <!-- Dynamic News Cards -->
+        <div class="col-md-4" *ngFor="let item of news$ | async">
+          <div class="card shadow-lg h-100" style="border-radius: 20px; overflow: hidden; border: none;">
+            <!-- Image (if available) -->
+            <img *ngIf="item.imageUrl" [src]="item.imageUrl" class="card-img-top" alt="News image" style="height: 200px; object-fit: cover;">
+            
+            <div class="card-body p-4">
+              <h3 class="fw-bold mb-2">{{ item.title }}</h3>
+              <p class="text-muted mb-3">{{ item.date }}</p>
+              <p>{{ item.description }}</p>
+            </div>
+            <div class="card-footer bg-white border-0 p-4">
+              <button class="btn btn-primary w-100" [routerLink]="['/news', item.id]">Read More</button>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Placeholder when no news is available -->
+        <div class="col-12 text-center" *ngIf="(news$ | async)?.length === 0">
+          <div class="alert alert-info">
+            <p class="mb-0">No news items available at the moment.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Special Offers Section -->
+    <div class="container mb-5" *ngIf="activeTab === 'offers'">
+      <h2 class="text-center fw-bold mb-4">Special Offers</h2>
+      
+      <div class="row g-4">
+        <!-- Dynamic Offer Cards -->
+        <div class="col-md-4" *ngFor="let item of offers$ | async">
+          <div class="card shadow-lg h-100" style="border-radius: 20px; overflow: hidden; border: none;">
+            <!-- Image (if available) -->
+            <img *ngIf="item.imageUrl" [src]="item.imageUrl" class="card-img-top" alt="Offer image" style="height: 200px; object-fit: cover;">
+            
+            <div class="card-body p-4">
+              <h3 class="fw-bold mb-2">{{ item.title }}</h3>
+              <div class="badge bg-warning text-dark mb-3">Valid until: {{ item.validUntil }}</div>
+              <p>{{ item.description }}</p>
+            </div>
+            <div class="card-footer bg-white border-0 p-4">
+              <button class="btn btn-primary w-100">Learn More</button>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Placeholder when no offers are available -->
+        <div class="col-12 text-center" *ngIf="(offers$ | async)?.length === 0">
+          <div class="alert alert-info">
+            <p class="mb-0">No special offers available at the moment.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="bg-dark text-white py-4">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-4 mb-3 mb-md-0">
+          <h5 class="fw-bold mb-3">Academix</h5>
+          <p>Providing quality education since 2010. Our mission is to empower students with knowledge and skills for a brighter future.</p>
+        </div>
+        <div class="col-md-4 mb-3 mb-md-0">
+          <h5 class="fw-bold mb-3">Quick Links</h5>
+          <ul class="list-unstyled">
+            <li><a href="#" class="text-white text-decoration-none">About Us</a></li>
+            <li><a href="#" class="text-white text-decoration-none">Courses</a></li>
+            <li><a href="#" class="text-white text-decoration-none">Events</a></li>
+            <li><a href="#" class="text-white text-decoration-none">Contact</a></li>
+          </ul>
+        </div>
+        <div class="col-md-4">
+          <h5 class="fw-bold mb-3">Contact Us</h5>
+          <p>
+            123 Education Street<br>
+            Learning City, ED 12345<br>
+            <a href="mailto:info@academix.com" class="text-white">info&#64;academix.com</a><br>
+            +1 (555) 123-4567
+          </p>
+        </div>
+      </div>
+      <div class="text-center mt-4">
+        <p class="mb-0">© 2023 Academix. All rights reserved.</p>
+      </div>
+    </div>
+  </footer>
+</div>

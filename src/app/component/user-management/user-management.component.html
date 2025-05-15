@@ -1,0 +1,60 @@
+<!-- user-management.component.html -->
+<div class="container mt-4">
+  <h3>User Management</h3>
+  
+  <div class="card shadow mb-4">
+    <div class="card-body">
+      <div class="row g-3 align-items-center">
+        <div class="col-auto">
+          <label class="col-form-label">Search User:</label>
+        </div>
+        <div class="col-md-4">
+          <input type="email" class="form-control" 
+                 [(ngModel)]="searchEmail" 
+                 placeholder="Enter user email">
+        </div>
+        <div class="col-md-2">
+          <button class="btn btn-primary" (click)="searchUser()">Search</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card shadow">
+    <div class="card-body">
+      <h5 class="card-title">User List</h5>
+      <table class="table table-hover">
+        <thead class="table-dark">
+          <tr>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Roles</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let user of users | async">
+            <td>{{ user.name }}</td>
+            <td>{{ user.email }}</td>
+            <td>
+              <span class="badge bg-danger" *ngIf="user.roles?.admin">Admin</span>
+              <span class="badge bg-secondary" *ngIf="user.roles?.user">User</span>
+            </td>
+            <td>
+              <button *ngIf="!user.roles?.admin" 
+                      class="btn btn-success btn-sm me-2"
+                      (click)="promoteToAdmin(user.id)">
+                Make Admin
+              </button>
+              <button *ngIf="user.roles?.admin" 
+                      class="btn btn-danger btn-sm"
+                      (click)="demoteFromAdmin(user.id)">
+                Remove Admin
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

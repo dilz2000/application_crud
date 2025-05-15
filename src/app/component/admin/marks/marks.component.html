@@ -1,0 +1,96 @@
+<div class="container-fluid">
+  <div class="row mb-3">
+    <div class="col-md-4">
+      <!-- Button to create a new test -->
+      <button class="btn btn-primary" (click)="openAddTestDialog()">Create New Test</button>
+    </div>
+    <div class="col-md-8 d-flex justify-content-end">
+      <input type="text"
+             class="form-control w-50"
+             placeholder="Search students"
+             [formControl]="searchQuery">
+    </div>
+  </div>
+
+  <ng-container *ngIf="combinedData$ | async as data">
+    <div class="table-responsive">
+      <table class="table table-bordered">
+        <thead>
+          <tr>
+            <th>User ID</th>
+            <th>User Name</th>
+            <th *ngFor="let test of data.tests">
+              {{ test.name }}
+            </th>
+            <th class="bg-light">Average</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let user of data.users | filter: (searchQuery.value || '')">
+            <td>{{ user.sid }}</td>
+            <td>{{ user.name }}</td>
+            <td *ngFor="let test of data.tests">
+              <button class="btn btn-sm btn-light"
+                      (click)="openMarkDialog(user, test)">
+                {{ user.testScores?.[test.id] || '-' }}
+              </button>
+            </td>
+            <td class="bg-light fw-bold">
+              {{ calculateStudentAverage(user, data.tests) || '-' }}
+            </td>
+          </tr>
+          <!-- Subject Average Row -->
+          <tr class="bg-light">
+            <td colspan="2" class="fw-bold">Subject Average</td>
+            <td *ngFor="let test of data.tests" class="fw-bold">
+              {{ testAverages[test.id] || '-' }}
+            </td>
+            <!-- Blank cell in the bottom-right corner -->
+            <td class="fw-bold bg-secondary text-white"></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </ng-container>
+</div>
+
+<!-- Modal: Add New Test -->
+<div class="modal fade" id="addTestModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Create New Test</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <label>Test Name</label>
+        <input type="text" class="form-control" [(ngModel)]="newTestName">
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" (click)="closeModal('addTestModal')">Cancel</button>
+        <button class="btn btn-primary" (click)="createTest()">Create</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Edit Mark -->
+<div class="modal fade" id="markModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Edit Mark for {{ selectedUser?.name }}</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <p>Test: <strong>{{ selectedTest?.name }}</strong></p>
+        <label>New Mark</label>
+        <input type="number" class="form-control" [(ngModel)]="newMark">
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" (click)="closeModal('markModal')">Cancel</button>
+        <button class="btn btn-success" (click)="confirmMarkUpdate()">Save</button>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,98 @@
+<div class="admin-container">
+    <!-- Header -->
+    <header class="admin-header">
+      <div class="header-left">
+        <button class="sidebar-toggle" (click)="toggleSidebar()">
+          <i class="fas fa-bars"></i>
+        </button>
+        <div class="branding">
+          <img src="assets/logo.png" alt="Company Logo" class="logo">
+          <span class="company-name">Academix</span>
+        </div>
+      </div>
+      <div class="header-right">
+        <button class="btn btn-danger" (click)="logout()">
+          <i class="fas fa-sign-out-alt"></i> Logout
+        </button>
+      </div>
+    </header>
+  
+    <!-- Side Navigation -->
+    <nav class="sidebar" [class.collapsed]="isSidebarCollapsed">
+      <div class="sidebar-inner">
+        <ul class="nav flex-column">
+          <li class="nav-item">
+            <a class="nav-link" routerLink="/admin/panel" routerLinkActive="active"  data-text="Dashboard">
+              <i class="fas fa-tachometer-alt"></i>
+              <span class="link-text">Dashboard</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" routerLink="/admin/attend" routerLinkActive="active">
+              <i class="fas fa-users"></i>
+              <span class="link-text">Attendance</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" routerLink="/admin/profile" routerLinkActive="active">
+              <i class="fas fa-user"></i>
+              <span class="link-text">Profile</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" routerLink="/admin/teacher" routerLinkActive="active">
+              <i class="fas fa-chalkboard-teacher"></i>
+              <span class="link-text">Add Teachers</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" routerLink="/admin/payments" routerLinkActive="active">
+              <i class="fas fa-money-bill"></i>
+              <span class="link-text">Payments</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" routerLink="/admin/subjects" routerLinkActive="active">
+              <i class="fas fa-lightbulb"></i>
+              <span class="link-text">Subjects</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" routerLink="/admin/studentSub" routerLinkActive="active">
+              <i class="fas fa-book"></i>
+              <span class="link-text">Assign Students</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" routerLink="/admin/tests" routerLinkActive="active">
+              <i class="fas fa-pencil-alt"></i>
+              <span class="link-text">Create Test</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" routerLink="/admin/testMarks" routerLinkActive="active">
+              <i class="fas fa-graduation-cap"></i>
+              <span class="link-text">Test Marks</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" routerLink="/admin/marks" routerLinkActive="active">
+              <i class="fas fa-chart-line"></i>
+              <span class="link-text">Exam Marks</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" routerLink="/admin/admin-updates" routerLinkActive="active">
+              <i class="fas fa-arrow-up"></i>
+              <span class="link-text">Updates</span>
+            </a>
+          </li>
+        </ul>
+      </div>
+    </nav>
+  
+    <!-- Main Content -->
+    <main class="main-content" [class.collapsed]="isSidebarCollapsed">
+      <router-outlet></router-outlet>
+    </main>
+  </div>

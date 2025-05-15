@@ -1,0 +1,263 @@
+<div class="container">
+  <!-- Test Selection Section -->
+  <div class="card shadow mb-4" *ngIf="!selectedTest">
+    <div class="card-header bg-primary text-white">
+      <h5 class="mb-0">Step 1: Select Test</h5>
+    </div>
+    <div class="card-body">
+      <div *ngIf="loading" class="text-center">
+        <div class="spinner-border text-primary" role="status">
+          <span class="visually-hidden">Loading...</span>
+        </div>
+      </div>
+      
+      <div class="list-group">
+        <a *ngFor="let test of tests$ | async" 
+           class="list-group-item list-group-item-action"
+           (click)="selectTest(test)">
+          <div class="d-flex w-100 justify-content-between">
+            <h5 class="mb-1">{{ test.name }}</h5>
+            <small [ngClass]="{
+              'badge bg-warning': test.status === 'upcoming',
+              'badge bg-primary': test.status === 'ongoing',
+              'badge bg-success': test.status === 'completed'
+            }">
+              {{ test.status | titlecase }}
+            </small>
+          </div>
+          <p class="mb-1">{{ test.description || 'No description' }}</p>
+          <small>Class: {{ test.className }} | Grade: {{ test.gradeName }} | Date: {{ test.date | date:'mediumDate' }}</small>
+        </a>
+        <div *ngIf="(tests$ | async)?.length === 0" class="list-group-item text-center">
+          No tests available. Please create tests first.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Subject Selection Section -->
+  <div class="card shadow mb-4" *ngIf="selectedTest && !selectedSubject">
+    <div class="card-header bg-success text-white">
+      <h5 class="mb-0">Step 2: Select Subject for {{ selectedTest.name }}</h5>
+    </div>
+    <div class="card-body">
+      <button class="btn btn-secondary mb-3" (click)="clearSelection()">
+        <i class="fas fa-arrow-left"></i> Back to Tests
+      </button>
+      
+      <div *ngIf="loading" class="text-center">
+        <div class="spinner-border text-primary" role="status">
+          <span class="visually-hidden">Loading...</span>
+        </div>
+      </div>
+      
+      <div class="list-group">
+        <a *ngFor="let subject of availableSubjects$ | async" 
+           class="list-group-item list-group-item-action"
+           (click)="selectSubject(subject)">
+          <div class="d-flex w-100 justify-content-between">
+            <h5 class="mb-1">{{ subject.name }}</h5>
+            <small>{{ subject.code }}</small>
+          </div>
+          <small>Grade: {{ subject.gradeLevel }}</small>
+        </a>
+        <div *ngIf="(availableSubjects$ | async)?.length === 0" class="list-group-item text-center">
+          No subjects assigned to this test. Please assign subjects first.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Student and Marks Section -->
+  <div *ngIf="selectedTest && selectedSubject">
+    <div class="card shadow mb-4">
+      <div class="card-header bg-info text-white">
+        <h5 class="mb-0">
+          Step 3: Enter Marks for {{ selectedSubject.name }} ({{ selectedTest.name }})
+        </h5>
+      </div>
+      <div class="card-body">
+        <button class="btn btn-secondary mb-3" (click)="selectedSubject = null">
+          <i class="fas fa-arrow-left"></i> Back to Subjects
+        </button>
+        
+        <div class="row">
+          <!-- Student List -->
+          <div class="col-md-7">
+            <div class="card">
+              <div class="card-header">
+                <h5>Students</h5>
+              </div>
+              <div class="card-body">
+                <div *ngIf="loading" class="text-center">
+                  <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                  </div>
+                </div>
+                
+                <div class="list-group">
+                  <ng-container *ngIf="(students$ | async) as students; else noStudents">
+                    <ng-container *ngIf="(testMarks$ | async) as marks">
+                      <a *ngFor="let student of students" 
+                         class="list-group-item list-group-item-action"
+                         [class.active]="selectedStudent?.docId === student.docId"
+                         (click)="selectStudent(student)">
+                        <div class="d-flex w-100 justify-content-between">
+                          <div>
+                            <h6 class="mb-1">{{ student.name }}</h6>
+                            <small>ID: {{ student.sid || 'N/A' }}</small>
+                          </div>
+                          <div>
+                            <span *ngIf="getMarksForStudent(student, marks)" 
+                                  class="badge bg-success">
+                              {{ getMarksForStudent(student, marks)?.marks }} / 
+                              {{ getMarksForStudent(student, marks)?.maximumMarks }}
+                              ({{ getPercentage(getMarksForStudent(student, marks)!) | number:'1.0-1' }}%)
+                            </span>
+                            <span *ngIf="!getMarksForStudent(student, marks)" 
+                                  class="badge bg-warning">Not Marked</span>
+                          </div>
+                        </div>
+                      </a>
+                    </ng-container>
+                  </ng-container>
+                  <ng-template #noStudents>
+                    <div class="list-group-item text-center">
+                      No students found for this subject.
+                    </div>
+                  </ng-template>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Mark Entry Form -->
+          <div class="col-md-5">
+            <div class="card">
+              <div class="card-header">
+                <h5>Mark Entry</h5>
+              </div>
+              <div class="card-body">
+                <ng-container *ngIf="selectedStudent; else selectStudentPrompt">
+                  <h5>{{ selectedStudent.name }}</h5>
+                  <p class="text-muted">{{ selectedSubject.name }}</p>
+                  
+                  <form [formGroup]="markForm" (ngSubmit)="saveMarks()">
+                    <div class="mb-3">
+                      <label class="form-label">Marks Obtained</label>
+                      <input type="number" class="form-control" formControlName="marks">
+                      <div *ngIf="markForm.get('marks')?.invalid && markForm.get('marks')?.touched" 
+                           class="text-danger">
+                        Valid marks are required (≥ 0)
+                      </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                      <label class="form-label">Maximum Marks</label>
+                      <input type="number" class="form-control" formControlName="maximumMarks">
+                      <div *ngIf="markForm.get('maximumMarks')?.invalid && markForm.get('maximumMarks')?.touched" 
+                           class="text-danger">
+                        Must be at least 1
+                      </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                      <label class="form-label">Remarks</label>
+                      <textarea class="form-control" formControlName="remarks" rows="3"></textarea>
+                    </div>
+                    
+                    <div class="d-flex justify-content-between">
+                      <button type="submit" class="btn btn-primary" [disabled]="markForm.invalid">
+                        Save Marks
+                      </button>
+                      <button type="button" class="btn btn-secondary" (click)="resetMarkForm()">
+                        Cancel
+                      </button>
+                    </div>
+                  </form>
+                </ng-container>
+                <ng-template #selectStudentPrompt>
+                  <div class="alert alert-info">
+                    Please select a student to enter marks.
+                  </div>
+                </ng-template>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Marks Summary Section -->
+    <div class="card shadow mb-4">
+      <div class="card-header bg-dark text-white">
+        <h5 class="mb-0">Marks Summary</h5>
+      </div>
+      <div class="card-body">
+        <ng-container *ngIf="(testMarks$ | async) as marks; else loadingMarks">
+          <ng-container *ngIf="(students$ | async) as students">
+            <h6>Summary for {{ selectedSubject.name }}</h6>
+            
+            <div class="row mb-4">
+              <div class="col-md-3">
+                <div class="card bg-light">
+                  <div class="card-body text-center">
+                    <h6>Total Students</h6>
+                    <h4>{{ students.length }}</h4>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-3">
+                <div class="card bg-light">
+                  <div class="card-body text-center">
+                    <h6>Marked</h6>
+                    <h4>{{ markedCount }}</h4>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-3">
+                <div class="card bg-light">
+                  <div class="card-body text-center">
+                    <h6>Average</h6>
+                    <h4>{{ getAveragePercentage(marks) | number:'1.0-1' }}%</h4>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <div class="table-responsive">
+              <table class="table table-striped">
+                <thead>
+                  <tr>
+                    <th>Student</th>
+                    <th>Marks</th>
+                    <th>Percentage</th>
+                    <th>Remarks</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let mark of filteredMarks">
+                    <td>{{ mark.studentName }}</td>
+                    <td>{{ mark.marks }} / {{ mark.maximumMarks }}</td>
+                    <td>{{ (mark.marks / mark.maximumMarks * 100) | number:'1.0-1' }}%</td>
+                    <td>{{ mark.remarks || '-' }}</td>
+                  </tr>
+                  <tr *ngIf="filteredMarks.length === 0">
+                    <td colspan="4" class="text-center">No marks recorded yet</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </ng-container>
+        </ng-container>
+        <ng-template #loadingMarks>
+          <div class="text-center">
+            <div class="spinner-border text-primary" role="status">
+              <span class="visually-hidden">Loading marks...</span>
+            </div>
+          </div>
+        </ng-template>
+      </div>
+    </div>
+  </div>
+</div>

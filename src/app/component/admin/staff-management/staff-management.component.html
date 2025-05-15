@@ -1,0 +1,129 @@
+<div class="container">
+  <!-- Teacher List -->
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h3 class="text-primary">Teacher List</h3>
+    <button class="btn btn-primary" (click)="openAddTeacherModal()">
+      <i class="fas fa-plus me-2"></i>Add Teacher
+    </button>
+  </div>
+  
+  <div class="card shadow mb-4">
+    <div class="card-body">
+      <!-- Search Bar -->
+      <input type="text" class="form-control mb-3" placeholder="Search Teachers" [formControl]="searchTeacher">
+
+      <div class="table-responsive">
+        <table class="table table-bordered">
+          <thead class="table-primary">
+            <tr>
+              <th>Teacher ID</th>
+              <th>Name</th>
+              <th>Phone</th>
+              <th>Address</th>
+              <th>Subjects</th>
+              <th>Joining Date</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let teacher of filterTeachers((teachers$ | async) || [], searchTeacher.value ?? '')">
+              <td>{{ teacher.tid || 'N/A' }}</td>
+              <td>{{ teacher.name || 'N/A' }}</td>
+              <td>{{ teacher.phone || 'N/A' }}</td>
+              <td>{{ teacher.address || 'N/A' }}</td>
+              <td>
+                <span *ngIf="teacher.subjects?.length; else noSubjects">
+                  {{ teacher.subjects.join(', ') }}
+                </span>
+                <ng-template #noSubjects>N/A</ng-template>
+              </td>
+              <td>{{ teacher.joiningDate || 'N/A' }}</td>
+              <td>
+                <button class="btn btn-danger btn-sm" (click)="deleteTeacher(teacher.docId || '')">
+                  <i class="fas fa-trash"></i>
+                </button>
+              </td>
+            </tr>
+            <tr *ngIf="(teachers$ | async)?.length === 0">
+              <td colspan="7" class="text-center">No teachers found</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add Teacher Modal -->
+  <div class="modal" tabindex="-1" [ngClass]="{'d-block': showAddTeacherModal}" [ngStyle]="{'display': showAddTeacherModal ? 'block' : 'none', 'background-color': 'rgba(0,0,0,0.5)'}">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Add New Teacher</h5>
+          <button type="button" class="btn-close" (click)="closeAddTeacherModal()"></button>
+        </div>
+        <div class="modal-body">
+          <form [formGroup]="teacherForm">
+            <div class="row mb-3">
+              <div class="col-md-6">
+                <label for="name" class="form-label">Name</label>
+                <input type="text" class="form-control" id="name" formControlName="name">
+                <div *ngIf="teacherForm.get('name')?.invalid && teacherForm.get('name')?.touched" class="text-danger">
+                  Name is required
+                </div>
+              </div>
+              <div class="col-md-6">
+                <label for="phone" class="form-label">Phone Number</label>
+                <input type="text" class="form-control" id="phone" formControlName="phone">
+                <div *ngIf="teacherForm.get('phone')?.invalid && teacherForm.get('phone')?.touched" class="text-danger">
+                  Valid phone number is required (10 digits)
+                </div>
+              </div>
+            </div>
+            <div class="mb-3">
+              <label for="address" class="form-label">Address</label>
+              <textarea class="form-control" id="address" rows="3" formControlName="address"></textarea>
+              <div *ngIf="teacherForm.get('address')?.invalid && teacherForm.get('address')?.touched" class="text-danger">
+                Address is required
+              </div>
+            </div>
+            
+            <!-- Teaching Subjects (dynamic fields) -->
+            <div class="mb-3">
+              <label class="form-label">Teaching Subjects</label>
+              <div formArrayName="subjects">
+                <div class="row mb-2" *ngFor="let subject of subjectsFormArray.controls; let i = index">
+                  <div class="col-10">
+                    <input type="text" class="form-control" placeholder="Enter subject" [formControlName]="i">
+                    <div *ngIf="subjectsFormArray.at(i).invalid && subjectsFormArray.at(i).touched" class="text-danger">
+                      Subject is required
+                    </div>
+                  </div>
+                  <div class="col-2">
+                    <button type="button" class="btn btn-danger" (click)="removeSubjectField(i)" [disabled]="subjectsFormArray.length === 1">
+                      <i class="fas fa-times"></i>
+                    </button>
+                  </div>
+                </div>
+                <button type="button" class="btn btn-secondary btn-sm mt-2" (click)="addSubjectField()">
+                  <i class="fas fa-plus me-1"></i> Add Another Subject
+                </button>
+              </div>
+            </div>
+            
+            <div class="mb-3">
+              <label for="joiningDate" class="form-label">Joining Date</label>
+              <input type="date" class="form-control" id="joiningDate" formControlName="joiningDate">
+              <div *ngIf="teacherForm.get('joiningDate')?.invalid && teacherForm.get('joiningDate')?.touched" class="text-danger">
+                Joining date is required
+              </div>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" (click)="closeAddTeacherModal()">Cancel</button>
+          <button type="button" class="btn btn-primary" (click)="addTeacher()">Add Teacher</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

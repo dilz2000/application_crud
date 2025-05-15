@@ -1,0 +1,49 @@
+<!-- admin-dashboard.component.html -->
+<div class="container mt-4">
+  <h3>Admin Dashboard</h3>
+  
+  <div class="card shadow">
+    <div class="card-body">
+      <h5 class="card-title">User List</h5>
+      <div class="table-responsive">
+        <table class="table table-hover">
+          <thead class="table-dark">
+            <tr>
+              <th>Name</th>
+              <th>Email</th>
+              <th>Account Created</th>
+              <th>Roles</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let user of users$ | async">
+              <td>{{ user.name }}</td>
+              <td>{{ user.email }}</td>
+              <td>{{ user.createdAt?.toDate() | date:'medium' }}</td>
+              <td>
+                <span class="badge bg-danger me-1" *ngIf="user.roles?.admin">Admin</span>
+                <span class="badge bg-secondary" *ngIf="user.roles?.user">User</span>
+              </td>
+              <td>
+                <button *ngIf="!user.roles?.admin" 
+                        class="btn btn-success btn-sm me-2"
+                        (click)="promoteToAdmin(user.uid)">
+                  Make Admin
+                </button>
+                <button *ngIf="user.roles?.admin" 
+                        class="btn btn-danger btn-sm"
+                        (click)="demoteFromAdmin(user.uid)">
+                  Remove Admin
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <div *ngIf="(users$ | async)?.length === 0" class="alert alert-info mt-3">
+          No users found in the system
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,59 @@
+.container {
+    margin-top: 20px;
+  }
+  
+  .card {
+    background-color: #3f51b5;
+    padding: 20px;
+    border-radius: 10px;
+  }
+  
+  h2, h3, h4, h5 {
+    color: white;
+  }
+  
+  .table {
+    background: white;
+  }
+  
+  .table-bordered th, .table-bordered td {
+    text-align: center;
+    vertical-align: middle;
+  }
+  
+  .table-bordered th {
+    background: #3f51b5;
+    color: white;
+  }
+  
+  .btn-success, .btn-danger {
+    width: 40px;
+    height: 40px;
+    font-size: 18px;
+    border-radius: 5px;
+  }
+  
+  .badge.bg-success {
+    font-size: 14px;
+    padding: 8px;
+  }
+  
+  .text-muted {
+    color: #ccc;
+  }
+  
+  /* Logout Button */
+  .logout-btn {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 24px;
+    cursor: pointer;
+    padding: 8px;
+    transition: 0.3s;
+  }
+  
+  .logout-btn:hover {
+    color: red;
+  }
+  

@@ -1,0 +1,96 @@
+<div class="container-fluid min-vh-100" style="background-color: #4C6EF5;">
+    <div class="d-flex justify-content-center align-items-center min-vh-100">
+      <div class="card shadow-lg p-4" style="border-radius: 20px; background-color: #EAF0FF; width: 600px;">
+        <!-- Logo and Company Name -->
+        <div class="text-center mb-4">
+          <img src="assets/logo.png" alt="Logo" style="width: 100px; height: 100px;">
+          <h1 class="text-primary fw-bold mt-3">Academix</h1>
+          <h3 class="text-primary fw-bold">Register</h3>
+        </div>
+  
+        <!-- Registration Form -->
+        <form>
+          <div class="mb-3">
+            <label class="form-label text-muted fw-bold" style="font-size: 1.2rem" for="fullname">Full Name</label>
+            <input
+              type="text"
+              id="fullname"
+              class="form-control form-control-lg"
+              placeholder="Enter your full name"
+              [(ngModel)]="name"
+              name="name"
+              required
+            />
+          </div>
+          <div class="mb-3">
+            <label class="form-label text-muted fw-bold" style="font-size: 1.2rem" for="email">Email</label>
+            <input
+              type="email"
+              id="email"
+              class="form-control form-control-lg"
+              placeholder="Enter email address"
+              [(ngModel)]="email"
+              name="email"
+              required
+            />
+          </div>
+          <div class="mb-3">
+            <label class="form-label text-muted fw-bold" style="font-size: 1.2rem" for="phone">Phone Number</label>
+            <input
+              type="text"
+              id="phone"
+              class="form-control form-control-lg"
+              placeholder="Enter phone number"
+              [(ngModel)]="phone"
+              name="phone"
+              required
+            />
+          </div>
+          <div class="mb-3">
+            <label class="form-label text-muted fw-bold" style="font-size: 1.2rem" for="password">Password</label>
+            <input
+              type="password"
+              id="password"
+              class="form-control form-control-lg"
+              placeholder="Enter password"
+              [(ngModel)]="password"
+              name="password"
+              required
+            />
+          </div>
+          <div class="mb-4">
+            <label class="form-label text-muted fw-bold" style="font-size: 1.2rem" for="confirmPassword">Confirm Password</label>
+            <input
+              type="password"
+              id="confirmPassword"
+              class="form-control form-control-lg"
+              placeholder="Confirm your password"
+              [(ngModel)]="confirmPassword"
+              name="confirmPassword"
+              required
+            />
+          </div>
+  
+          <div class="d-grid">
+            <button
+              type="button"
+              class="btn btn-primary btn-lg"
+              (click)="register()"
+            >
+              Register
+            </button>
+          </div>
+  
+          <!-- Link -->
+          <div class="text-center mt-4" style="font-size: 1.2rem;">
+            <a
+              routerLink="/login"
+              class="text-primary text-decoration-none fw-bold"
+            >
+              Have an account? Login
+            </a>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>

@@ -1,0 +1,107 @@
+<div class="container">
+    <h2 class="text-primary mb-4">Student Subject Management</h2>
+  
+    <div class="row">
+      <!-- Student Selection Panel -->
+      <div class="col-md-4">
+        <div class="card shadow mb-4">
+          <div class="card-header bg-primary text-white">
+            <h5 class="mb-0">Select Student</h5>
+          </div>
+          <div class="card-body">
+            <!-- Filter Controls -->
+            <div class="mb-3">
+              <label for="gradeFilter" class="form-label">Filter by Grade</label>
+              <select id="gradeFilter" class="form-select" [formControl]="selectedGrade">
+                <option value="">All Grades</option>
+                <option *ngFor="let grade of availableGrades" [value]="grade">{{ grade }}</option>
+              </select>
+            </div>
+            <div class="mb-3">
+              <label for="classFilter" class="form-label">Filter by Class</label>
+              <select id="classFilter" class="form-select" [formControl]="selectedClass">
+                <option value="">All Classes</option>
+                <option *ngFor="let class of availableClasses" [value]="class">{{ class }}</option>
+              </select>
+            </div>
+            <div class="mb-3">
+              <label for="searchStudent" class="form-label">Search Student</label>
+              <input type="text" id="searchStudent" class="form-control" [formControl]="searchStudent" placeholder="Search by name, ID, email...">
+            </div>
+  
+            <!-- Student List -->
+            <div class="list-group">
+              <a *ngFor="let student of filterStudents((students$ | async), searchStudent.value || '')" 
+                 class="list-group-item list-group-item-action"
+                 [class.active]="selectedStudent && selectedStudent.docId === student.docId"
+                 (click)="selectStudent(student)">
+                <div class="d-flex w-100 justify-content-between">
+                  <h6 class="mb-1">{{ student.name }}</h6>
+                  <small>{{ student.grade }} - {{ student.class }}</small>
+                </div>
+                <p class="mb-1">ID: {{ student.sid }}</p>
+                <small>{{ student.email }}</small>
+              </a>
+              <div *ngIf="(students$ | async)?.length === 0" class="list-group-item text-center">
+                No students found
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+  
+      <!-- Subject Assignment Panel -->
+      <div class="col-md-8">
+        <div class="card shadow">
+          <div class="card-header bg-success text-white">
+            <h5 class="mb-0" *ngIf="selectedStudent">Subject Assignment for {{ selectedStudent.name }}</h5>
+            <h5 class="mb-0" *ngIf="!selectedStudent">Select a student first</h5>
+          </div>
+          <div class="card-body" *ngIf="selectedStudent">
+            <div class="row">
+              <!-- Assigned Subjects -->
+              <div class="col-md-6">
+                <h6 class="mb-3">Assigned Subjects</h6>
+                <div class="list-group">
+                  <div *ngFor="let subject of studentSubjects" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                    <div>
+                      <strong>{{ subject.name }}</strong>
+                      <div><small>{{ subject.code }}</small></div>
+                    </div>
+                    <button class="btn btn-danger btn-sm" (click)="removeSubject(subject)">
+                      <i class="fas fa-minus-circle"></i> Remove
+                    </button>
+                  </div>
+                  <div *ngIf="studentSubjects.length === 0" class="list-group-item text-center">
+                    No subjects assigned yet
+                  </div>
+                </div>
+              </div>
+  
+              <!-- Available Subjects -->
+              <div class="col-md-6">
+                <h6 class="mb-3">Available Subjects</h6>
+                <div class="list-group">
+                  <div *ngFor="let subject of availableSubjects" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                    <div>
+                      <strong>{{ subject.name }}</strong>
+                      <div><small>{{ subject.code }}</small></div>
+                    </div>
+                    <button class="btn btn-success btn-sm" (click)="assignSubject(subject)">
+                      <i class="fas fa-plus-circle"></i> Assign
+                    </button>
+                  </div>
+                  <div *ngIf="availableSubjects.length === 0" class="list-group-item text-center">
+                    No more subjects available for this grade
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="card-body text-center" *ngIf="!selectedStudent">
+            <p>Please select a student from the list to manage their subjects</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>

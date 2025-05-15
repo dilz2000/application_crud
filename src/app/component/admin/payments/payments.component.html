@@ -1,0 +1,57 @@
+<div class="card shadow">
+  <div class="card-body">
+    <div class="row mb-4">
+      <div class="col-md-4">
+        <input type="number" class="form-control" [(ngModel)]="selectedYear" placeholder="Enter year">
+      </div>
+      <div class="col-md-8">
+        <div class="input-group">
+          <input type="text" class="form-control" [formControl]="searchQuery" placeholder="Search students">
+        </div>
+      </div>
+    </div>
+
+    <div class="table-responsive">
+      <table class="table table-bordered">
+        <thead>
+          <tr>
+            <th>Student Name</th>
+            <th *ngFor="let month of months">{{ month }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let user of (users$ | async | filter: (searchQuery.value || ''))">
+            <td>{{ user.name }}</td>
+            <td *ngFor="let month of months">
+              <button class="btn btn-sm" 
+                      [class.btn-success]="user.payments?.[selectedYear]?.[month]"
+                      [class.btn-danger]="!user.payments?.[selectedYear]?.[month]"
+                      (click)="openPaymentDialog(user, month)">
+                {{ user.payments?.[selectedYear]?.[month] ? 'Paid' : 'Unpaid' }}
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Payment Confirmation Modal -->
+<div class="modal fade" id="paymentModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Update Payment Status</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <p>Do you want to change the payment status for <strong>{{ selectedUser?.name }}</strong> for <strong>{{ selectedMonth }}</strong>?</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="closeModal()">Cancel</button>
+        <button type="button" class="btn btn-success" (click)="confirmPaymentUpdate()">Confirm</button>
+      </div>
+    </div>
+  </div>
+</div>

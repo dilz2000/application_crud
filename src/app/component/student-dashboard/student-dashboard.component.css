@@ -1,0 +1,475 @@
+.dashboard-container {
+    padding: 20px;
+    position: relative;
+    min-height: 600px;
+    font-family: 'Roboto', Arial, sans-serif;
+  }
+  
+  .loading-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(255, 255, 255, 0.8);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 10;
+  }
+  
+  .spinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid #3498db;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-bottom: 10px;
+  }
+  
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+  
+  .dashboard-header {
+    margin-bottom: 25px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #eaeaea;
+  }
+  
+  .user-info h1 {
+    margin: 0;
+  }
+  
+  .user-info p {
+    color: #666;
+    margin: 5px 0 0;
+  }
+  
+  /* Dashboard Grid Layout */
+  .dashboard-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+  }
+  
+  /* Card Styles */
+  .dashboard-card {
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  
+  .dashboard-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+  }
+  
+  .card-header {
+    background-color: #f8f9fa;
+    padding: 15px 20px;
+    border-bottom: 1px solid #eaeaea;
+  }
+  
+  .card-header h2 {
+    margin: 0;
+    font-size: 1.2rem;
+    color: #333;
+  }
+  
+  .card-body {
+    padding: 20px;
+  }
+  
+  /* Attendance Card Styles */
+  .attendance-stats {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+  }
+  
+  .stat-item {
+    text-align: center;
+    flex: 1;
+  }
+  
+  .stat-value {
+    font-size: 1.8rem;
+    font-weight: bold;
+    color: #2c3e50;
+  }
+  
+  .stat-label {
+    font-size: 0.9rem;
+    color: #7f8c8d;
+  }
+  
+  .current-month {
+    margin-bottom: 20px;
+  }
+  
+  .current-month h3 {
+    font-size: 1rem;
+    margin-bottom: 10px;
+    color: #333;
+  }
+  
+  .month-stats {
+    display: flex;
+    gap: 15px;
+  }
+  
+  .month-present {
+    color: #27ae60;
+    font-weight: 500;
+  }
+  
+  .month-absent {
+    color: #e74c3c;
+    font-weight: 500;
+  }
+  
+  .attendance-calendar h3 {
+    font-size: 1rem;
+    margin-bottom: 10px;
+    color: #333;
+  }
+  
+  .calendar-days {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+  }
+  
+  .calendar-day {
+    width: 30px;
+    height: 30px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    font-size: 0.8rem;
+  }
+  
+  .calendar-day.present {
+    background-color: rgba(46, 204, 113, 0.2);
+    border: 1px solid rgba(46, 204, 113, 0.5);
+  }
+  
+  .calendar-day.absent {
+    background-color: rgba(231, 76, 60, 0.2);
+    border: 1px solid rgba(231, 76, 60, 0.5);
+  }
+  
+  .day-date {
+    font-size: 0.7rem;
+  }
+  
+  .day-status {
+    font-weight: bold;
+  }
+  
+  /* Subjects Card Styles */
+  .subject-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+    padding: 10px;
+    border-radius: 4px;
+    background-color: #f8f9fa;
+  }
+  
+  .subject-code {
+    background-color: #3498db;
+    color: white;
+    padding: 5px 8px;
+    border-radius: 4px;
+    font-weight: bold;
+    margin-right: 10px;
+    font-size: 0.8rem;
+    min-width: 60px;
+    text-align: center;
+  }
+  
+  .subject-name {
+    font-size: 0.9rem;
+    color: #333;
+  }
+  
+  /* Test Performance Card Styles */
+  .filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-bottom: 20px;
+  }
+  
+  .filter-group {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+  
+  .filter-group label {
+    font-size: 0.8rem;
+    color: #666;
+  }
+  
+  .filter-group select {
+    padding: 8px;
+    border-radius: 4px;
+    border: 1px solid #ddd;
+    background-color: #fff;
+  }
+  
+  .clear-btn {
+    background-color: #e74c3c;
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 4px;
+    cursor: pointer;
+    align-self: flex-end;
+    font-size: 0.8rem;
+    transition: background-color 0.2s;
+  }
+  
+  .clear-btn:hover {
+    background-color: #c0392b;
+  }
+  
+  .marks-table-container {
+    overflow-x: auto;
+    margin-bottom: 20px;
+  }
+  
+  .marks-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9rem;
+  }
+  
+  .marks-table th,
+  .marks-table td {
+    padding: 10px;
+    text-align: left;
+    border-bottom: 1px solid #eaeaea;
+  }
+  
+  .marks-table th {
+    background-color: #f8f9fa;
+    font-weight: 500;
+  }
+  
+  .percentage-bar {
+    position: relative;
+    height: 20px;
+    background-color: #ecf0f1;
+    border-radius: 10px;
+    overflow: hidden;
+  }
+  
+  .percentage-fill {
+    height: 100%;
+    position: absolute;
+    left: 0;
+    top: 0;
+    border-radius: 10px;
+  }
+  
+  .percentage-fill.high {
+    background-color: #27ae60;
+  }
+  
+  .percentage-fill.medium {
+    background-color: #f39c12;
+  }
+  
+  .percentage-fill.low {
+    background-color: #e74c3c;
+  }
+  
+  .percentage-bar span {
+    position: absolute;
+    left: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: white;
+    font-weight: bold;
+    font-size: 0.8rem;
+    text-shadow: 0 0 2px rgba(0, 0, 0, 0.5);
+  }
+  
+  .performance-summary h3 {
+    font-size: 1rem;
+    margin-bottom: 15px;
+    color: #333;
+  }
+  
+  .summary-stats {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+  }
+  
+  .summary-item {
+    flex: 1;
+    min-width: 80px;
+    padding: 10px;
+    text-align: center;
+    background-color: #f8f9fa;
+    border-radius: 4px;
+  }
+  
+  .summary-value {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: #2c3e50;
+  }
+  
+  .summary-label {
+    font-size: 0.8rem;
+    color: #7f8c8d;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  
+  /* Upcoming Tests Card Styles */
+  .upcoming-test {
+    display: flex;
+    margin-bottom: 15px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #eaeaea;
+  }
+  
+  .upcoming-test:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+    padding-bottom: 0;
+  }
+  
+  .test-date {
+    background-color: #3498db;
+    color: white;
+    padding: 5px 10px;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    margin-right: 15px;
+    height: fit-content;
+    min-width: 80px;
+    text-align: center;
+  }
+  
+  .test-info {
+    flex: 1;
+  }
+  
+  .test-info h4 {
+    margin: 0 0 5px;
+    font-size: 1rem;
+  }
+  
+  .test-info p {
+    margin: 0 0 10px;
+    font-size: 0.85rem;
+    color: #666;
+  }
+  
+  .test-status {
+    font-size: 0.8rem;
+    padding: 3px 8px;
+    border-radius: 10px;
+    font-weight: 500;
+  }
+  
+  .test-status.upcoming {
+    background-color: #3498db;
+    color: white;
+  }
+  
+  .test-status.completed {
+    background-color: #27ae60;
+    color: white;
+  }
+  
+  .test-status.missed {
+    background-color: #e74c3c;
+    color: white;
+  }
+  
+  /* Not Logged In State */
+  .not-logged-in {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 50px 20px;
+    text-align: center;
+  }
+  
+  .not-logged-in h2 {
+    margin-bottom: 20px;
+    color: #666;
+  }
+  
+  .not-logged-in button {
+    background-color: #3498db;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s;
+  }
+  
+  .not-logged-in button:hover {
+    background-color: #2980b9;
+  }
+  
+  /* No Data States */
+  .no-data {
+    padding: 20px;
+    text-align: center;
+    color: #7f8c8d;
+    font-style: italic;
+    background-color: #f8f9fa;
+    border-radius: 4px;
+  }
+  
+  /* Responsive Design */
+  @media (max-width: 768px) {
+    .dashboard-grid {
+      grid-template-columns: 1fr;
+    }
+    
+    .attendance-stats,
+    .month-stats,
+    .filters {
+      flex-direction: column;
+      gap: 10px;
+    }
+    
+    .stat-item {
+      margin-bottom: 10px;
+    }
+    
+    .calendar-days {
+      justify-content: center;
+    }
+    
+    .summary-stats {
+      justify-content: center;
+    }
+    
+    .clear-btn {
+      align-self: flex-start;
+    }
+  }

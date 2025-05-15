@@ -1,0 +1,48 @@
+/* Tab button styling */
+.btn.active {
+    font-weight: bold;
+    color: #4C6EF5;
+  }
+  
+  /* Card hover effects */
+  .card {
+    transition: transform 0.3s ease;
+  }
+  
+  .card:hover {
+    transform: translateY(-5px);
+  }
+  
+  /* Badge styling */
+  .badge {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.85rem;
+  }
+  
+  /* Make Read More buttons more prominent on hover */
+  .btn-primary {
+    transition: all 0.3s ease;
+  }
+  
+  .btn-primary:hover {
+    transform: scale(1.05);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* Improved image handling */
+  .card-img-top {
+    transition: opacity 0.3s ease;
+  }
+  
+  .card:hover .card-img-top {
+    opacity: 0.9;
+  }
+  
+  /* Placeholder styling */
+  .alert-info {
+    background-color: rgba(76, 110, 245, 0.1);
+    border: none;
+    color: #4C6EF5;
+    padding: 2rem;
+    border-radius: 15px;
+  }

@@ -1,0 +1,273 @@
+<div class="container mt-4">
+  <h2 class="mb-4">Updates</h2>
+
+  <!-- Tab Buttons -->
+  <ul class="nav nav-tabs mb-4">
+    <li class="nav-item">
+      <button class="nav-link" [class.active]="activeTab.value === 'news'" (click)="activeTab.setValue('news')">
+        Manage News
+      </button>
+    </li>
+    <li class="nav-item">
+      <button class="nav-link" [class.active]="activeTab.value === 'offers'" (click)="activeTab.setValue('offers')">
+        Manage Offers
+      </button>
+    </li>
+  </ul>
+
+  <!-- News Management Tab -->
+  <div *ngIf="activeTab.value === 'news'" class="tab-content">
+    <div class="card mb-4">
+      <div class="card-header d-flex justify-content-between align-items-center">
+        <h3 class="mb-0">{{ editMode ? 'Edit News Item' : 'Add News Item' }}</h3>
+        <button *ngIf="editMode" class="btn btn-outline-secondary btn-sm" (click)="cancelEdit()">
+          Cancel Edit
+        </button>
+      </div>
+      <div class="card-body">
+        <form [formGroup]="newsForm" (ngSubmit)="saveNews()">
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label for="newsTitle" class="form-label">Title*</label>
+              <input 
+                type="text" 
+                id="newsTitle" 
+                class="form-control" 
+                formControlName="title"
+                [class.is-invalid]="newsForm.get('title')?.invalid && newsForm.get('title')?.touched"
+              >
+              <div class="invalid-feedback" *ngIf="newsForm.get('title')?.invalid && newsForm.get('title')?.touched">
+                Title is required
+              </div>
+            </div>
+            <div class="col-md-6 mb-3">
+              <label for="newsDate" class="form-label">Date</label>
+              <input 
+                type="date" 
+                id="newsDate" 
+                class="form-control" 
+                formControlName="date"
+              >
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label for="newsDescription" class="form-label">Description*</label>
+            <textarea 
+              id="newsDescription" 
+              class="form-control" 
+              formControlName="description"
+              rows="2"
+              [class.is-invalid]="newsForm.get('description')?.invalid && newsForm.get('description')?.touched"
+            ></textarea>
+            <div class="invalid-feedback" *ngIf="newsForm.get('description')?.invalid && newsForm.get('description')?.touched">
+              Description is required
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label for="newsContent" class="form-label">Content</label>
+            <textarea 
+              id="newsContent" 
+              class="form-control" 
+              formControlName="content"
+              rows="5"
+            ></textarea>
+          </div>
+
+          <div class="mb-3">
+            <label for="newsImage" class="form-label">Image</label>
+            <input 
+              type="file" 
+              id="newsImage" 
+              class="form-control" 
+              accept="image/*"
+              (change)="handleImageChange($event)"
+            >
+            <small class="form-text text-muted">Images will be uploaded to ImgBB</small>
+            
+            <!-- Image Preview -->
+            <div *ngIf="imagePreview" class="mt-2">
+              <img [src]="imagePreview" class="img-thumbnail" style="max-height: 200px;">
+            </div>
+          </div>
+
+          <div class="d-flex justify-content-end">
+            <button type="submit" class="btn btn-primary" [disabled]="newsForm.invalid">
+              {{ editMode ? 'Update News' : 'Add News' }}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- News List -->
+    <div class="card">
+      <div class="card-header">
+        <h3 class="mb-0">News Items</h3>
+      </div>
+      <div class="card-body">
+        <div class="table-responsive">
+          <table class="table table-hover">
+            <thead>
+              <tr>
+                <th>Title</th>
+                <th>Date</th>
+                <th>Description</th>
+                <th>Image</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let item of news$ | async">
+                <td>{{ item.title }}</td>
+                <td>{{ item.date }}</td>
+                <td>{{ item.description }}</td>
+                <td>
+                  <img *ngIf="item.imageUrl" [src]="item.imageUrl" class="img-thumbnail" style="max-height: 50px;">
+                  <span *ngIf="!item.imageUrl">No image</span>
+                </td>
+                <td>
+                  <button class="btn btn-sm btn-outline-primary me-1" (click)="editNews(item)">
+                    <i class="bi bi-pencil"></i> Edit
+                  </button>
+                  <button class="btn btn-sm btn-outline-danger" (click)="deleteNews(item.id)">
+                    <i class="bi bi-trash"></i> Delete
+                  </button>
+                </td>
+              </tr>
+              <tr *ngIf="(news$ | async)?.length === 0">
+                <td colspan="5" class="text-center">No news items found</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Offers Management Tab -->
+  <div *ngIf="activeTab.value === 'offers'" class="tab-content">
+    <div class="card mb-4">
+      <div class="card-header d-flex justify-content-between align-items-center">
+        <h3 class="mb-0">{{ editMode ? 'Edit Offer' : 'Add Offer' }}</h3>
+        <button *ngIf="editMode" class="btn btn-outline-secondary btn-sm" (click)="cancelEdit()">
+          Cancel Edit
+        </button>
+      </div>
+      <div class="card-body">
+        <form [formGroup]="offerForm" (ngSubmit)="saveOffer()">
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label for="offerTitle" class="form-label">Title*</label>
+              <input 
+                type="text" 
+                id="offerTitle" 
+                class="form-control" 
+                formControlName="title"
+                [class.is-invalid]="offerForm.get('title')?.invalid && offerForm.get('title')?.touched"
+              >
+              <div class="invalid-feedback" *ngIf="offerForm.get('title')?.invalid && offerForm.get('title')?.touched">
+                Title is required
+              </div>
+            </div>
+            <div class="col-md-6 mb-3">
+              <label for="offerValidUntil" class="form-label">Valid Until*</label>
+              <input 
+                type="date" 
+                id="offerValidUntil" 
+                class="form-control" 
+                formControlName="validUntil"
+                [class.is-invalid]="offerForm.get('validUntil')?.invalid && offerForm.get('validUntil')?.touched"
+              >
+              <div class="invalid-feedback" *ngIf="offerForm.get('validUntil')?.invalid && offerForm.get('validUntil')?.touched">
+                Valid Until date is required
+              </div>
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label for="offerDescription" class="form-label">Description*</label>
+            <textarea 
+              id="offerDescription" 
+              class="form-control" 
+              formControlName="description"
+              rows="3"
+              [class.is-invalid]="offerForm.get('description')?.invalid && offerForm.get('description')?.touched"
+            ></textarea>
+            <div class="invalid-feedback" *ngIf="offerForm.get('description')?.invalid && offerForm.get('description')?.touched">
+              Description is required
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label for="offerImage" class="form-label">Image</label>
+            <input 
+              type="file" 
+              id="offerImage" 
+              class="form-control" 
+              accept="image/*"
+              (change)="handleImageChange($event)"
+            >
+            <small class="form-text text-muted">Images will be uploaded to ImgBB</small>
+            
+            <!-- Image Preview -->
+            <div *ngIf="imagePreview" class="mt-2">
+              <img [src]="imagePreview" class="img-thumbnail" style="max-height: 200px;">
+            </div>
+          </div>
+
+          <div class="d-flex justify-content-end">
+            <button type="submit" class="btn btn-primary" [disabled]="offerForm.invalid">
+              {{ editMode ? 'Update Offer' : 'Add Offer' }}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Offers List -->
+    <div class="card">
+      <div class="card-header">
+        <h3 class="mb-0">Offers</h3>
+      </div>
+      <div class="card-body">
+        <div class="table-responsive">
+          <table class="table table-hover">
+            <thead>
+              <tr>
+                <th>Title</th>
+                <th>Valid Until</th>
+                <th>Description</th>
+                <th>Image</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let item of offers$ | async">
+                <td>{{ item.title }}</td>
+                <td>{{ item.validUntil }}</td>
+                <td>{{ item.description }}</td>
+                <td>
+                  <img *ngIf="item.imageUrl" [src]="item.imageUrl" class="img-thumbnail" style="max-height: 50px;">
+                  <span *ngIf="!item.imageUrl">No image</span>
+                </td>
+                <td>
+                  <button class="btn btn-sm btn-outline-primary me-1" (click)="editOffer(item)">
+                    <i class="bi bi-pencil"></i> Edit
+                  </button>
+                  <button class="btn btn-sm btn-outline-danger" (click)="deleteOffer(item.id)">
+                    <i class="bi bi-trash"></i> Delete
+                  </button>
+                </td>
+              </tr>
+              <tr *ngIf="(offers$ | async)?.length === 0">
+                <td colspan="5" class="text-center">No offers found</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

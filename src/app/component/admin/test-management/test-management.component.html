@@ -1,0 +1,136 @@
+<div class="container">
+    <h2 class="text-primary mb-4">Test Management</h2>
+  
+    <!-- Test Form -->
+    <div class="card shadow mb-4">
+      <div class="card-header bg-primary text-white">
+        <h5 class="mb-0">{{ editingTest ? 'Edit Test' : 'Add New Test' }}</h5>
+      </div>
+      <div class="card-body">
+        <form [formGroup]="testForm" (ngSubmit)="addTest()">
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label for="name" class="form-label">Test Name</label>
+              <input type="text" id="name" class="form-control" formControlName="name" placeholder="e.g. Midterm Exam">
+              <div *ngIf="testForm.get('name')?.invalid && testForm.get('name')?.touched" class="text-danger">
+                Test name is required
+              </div>
+            </div>
+            <div class="col-md-3 mb-3">
+              <label for="gradeId" class="form-label">Grade</label>
+              <select id="gradeId" class="form-select" formControlName="gradeId">
+                <option value="">Select Grade</option>
+                <option *ngFor="let grade of availableGrades" [value]="grade">{{ grade }}</option>
+              </select>
+              <div *ngIf="testForm.get('gradeId')?.invalid && testForm.get('gradeId')?.touched" class="text-danger">
+                Grade is required
+              </div>
+            </div>
+            <div class="col-md-3 mb-3">
+              <label for="classId" class="form-label">Class</label>
+              <select id="classId" class="form-select" formControlName="classId">
+                <option value="">Select Class</option>
+                <option *ngFor="let class of availableClasses" [value]="class">{{ class }}</option>
+              </select>
+              <div *ngIf="testForm.get('classId')?.invalid && testForm.get('classId')?.touched" class="text-danger">
+                Class is required
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-4 mb-3">
+              <label for="date" class="form-label">Test Date</label>
+              <input type="date" id="date" class="form-control" formControlName="date">
+              <div *ngIf="testForm.get('date')?.invalid && testForm.get('date')?.touched" class="text-danger">
+                Date is required
+              </div>
+            </div>
+            <div class="col-md-4 mb-3">
+              <label for="status" class="form-label">Status</label>
+              <select id="status" class="form-select" formControlName="status">
+                <option *ngFor="let status of statusOptions" [value]="status">
+                  {{ status.charAt(0).toUpperCase() + status.slice(1) }}
+                </option>
+              </select>
+            </div>
+            <div class="col-md-4 mb-3">
+              <label for="description" class="form-label">Description (Optional)</label>
+              <textarea id="description" class="form-control" formControlName="description" rows="2"></textarea>
+            </div>
+          </div>
+          <div class="d-flex justify-content-end mt-3">
+            <button type="button" class="btn btn-secondary me-2" (click)="resetForm()">Cancel</button>
+            <button type="submit" class="btn btn-primary" [disabled]="testForm.invalid">
+              {{ editingTest ? 'Update Test' : 'Add Test' }}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  
+    <!-- Test List -->
+    <div class="card shadow">
+      <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
+        <h5 class="mb-0">Test List</h5>
+        <div class="d-flex align-items-center">
+          <label for="statusFilter" class="me-2 text-white">Filter by Status:</label>
+          <select id="statusFilter" class="form-select form-select-sm" [(ngModel)]="selectedStatusFilter" (change)="filterTestsByStatus(selectedStatusFilter)">
+            <option value="">All Tests</option>
+            <option *ngFor="let status of statusOptions" [value]="status">
+              {{ status.charAt(0).toUpperCase() + status.slice(1) }}
+            </option>
+          </select>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="table-responsive">
+          <table class="table table-bordered table-hover">
+            <thead class="table-light">
+              <tr>
+                <th>Test Name</th>
+                <th>Grade</th>
+                <th>Class</th>
+                <th>Date</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let test of tests$ | async">
+                <td>{{ test.name }}</td>
+                <td>{{ test.gradeName }}</td>
+                <td>{{ test.className }}</td>
+                <td>{{ test.date | date:'mediumDate' }}</td>
+                <td>
+                  <span [ngClass]="{'badge bg-warning': test.status === 'upcoming', 
+                                   'badge bg-primary': test.status === 'ongoing',
+                                   'badge bg-success': test.status === 'completed'}">
+                    {{ test.status.charAt(0).toUpperCase() + test.status.slice(1) }}
+                  </span>
+                </td>
+                <td>
+                  <div class="btn-group">
+                    <button class="btn btn-primary btn-sm me-2" (click)="editTest(test)">
+                      <i class="fas fa-edit"></i> Edit
+                    </button>
+                    <button class="btn btn-info btn-sm me-2" [routerLink]="['../testSub']">
+                      <i class="fas fa-book"></i> Subjects
+                    </button>
+                    <button class="btn btn-success btn-sm me-2" [routerLink]="['../testMarks']">
+                      <i class="fas fa-clipboard-check"></i> Marks
+                    </button>
+                    <button class="btn btn-danger btn-sm me-2" (click)="deleteTest(test.id!)">
+                      <i class="fas fa-trash"></i> Delete
+                    </button>
+                  </div>
+                </td>
+              </tr>
+              <tr *ngIf="(tests$ | async)?.length === 0">
+                <td colspan="6" class="text-center">No tests found</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>

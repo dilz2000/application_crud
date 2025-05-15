@@ -1,0 +1,197 @@
+<div class="dashboard-container">
+    <div *ngIf="loading" class="loading-overlay">
+      <div class="spinner"></div>
+      <p>Loading your dashboard...</p>
+    </div>
+  
+    <ng-container *ngIf="(currentUser$ | async) as user; else notLoggedIn">
+      <header class="dashboard-header">
+        <div class="user-info">
+          <h1>Welcome, {{ user.name }}</h1>
+          <p>{{ user.grade }} | {{ user.class }} | ID: {{ user.sid }}</p>
+        </div>
+      </header>
+  
+      <div class="dashboard-grid">
+        <!-- Attendance Summary Card -->
+        <div class="dashboard-card attendance-card">
+          <div class="card-header">
+            <h2>Attendance Summary</h2>
+          </div>
+          <div class="card-body">
+            <div class="attendance-stats">
+              <div class="stat-item">
+                <div class="stat-value">{{ attendanceRate | number:'1.0-0' }}%</div>
+                <div class="stat-label">Overall</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-value">{{ daysPresent }}</div>
+                <div class="stat-label">Days Present</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-value">{{ totalDays - daysPresent }}</div>
+                <div class="stat-label">Days Absent</div>
+              </div>
+            </div>
+  
+            <div class="current-month">
+              <h3>This Month</h3>
+              <div class="month-stats">
+                <div class="month-present">Present: {{ getCurrentMonthAttendance().present }}</div>
+                <div class="month-absent">Absent: {{ getCurrentMonthAttendance().absent }}</div>
+              </div>
+            </div>
+  
+            <div class="attendance-calendar" *ngIf="attendanceData.length > 0">
+              <h3>Recent Attendance</h3>
+              <div class="calendar-days">
+                <div *ngFor="let day of attendanceData.slice(-14)" 
+                    [ngClass]="{'present': day.status, 'absent': !day.status}"
+                    class="calendar-day">
+                  <div class="day-date">{{ day.date | date:'d' }}</div>
+                  <div class="day-status">{{ day.status ? 'P' : 'A' }}</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+  
+        <!-- Subjects Card -->
+        <div class="dashboard-card subjects-card">
+          <div class="card-header">
+            <h2>My Subjects</h2>
+          </div>
+          <div class="card-body">
+            <ng-container *ngIf="(userSubjects$ | async) as subjects">
+              <div *ngIf="subjects.length === 0" class="no-data">
+                No subjects assigned yet.
+              </div>
+              <div *ngFor="let subject of subjects" class="subject-item">
+                <div class="subject-code">{{ subject.code }}</div>
+                <div class="subject-name">{{ subject.name }}</div>
+              </div>
+            </ng-container>
+          </div>
+        </div>
+  
+        <!-- Test Performance Card -->
+        <div class="dashboard-card performance-card">
+          <div class="card-header">
+            <h2>Test Performance</h2>
+          </div>
+          <div class="card-body">
+            <ng-container *ngIf="(userMarks$ | async) as marks">
+              <ng-container *ngIf="(userSubjects$ | async) as subjects">
+                <ng-container *ngIf="(userTests$ | async) as tests">
+                  <div *ngIf="marks.length === 0" class="no-data">
+                    No test marks available yet.
+                  </div>
+                  
+                  <div class="filters" *ngIf="marks.length > 0">
+                    <div class="filter-group">
+                      <label>Filter by Subject:</label>
+                      <select [(ngModel)]="selectedSubjectFilter">
+                        <option value="">All Subjects</option>
+                        <option *ngFor="let subject of subjects" [value]="subject.id">{{ subject.name }}</option>
+                      </select>
+                    </div>
+                    
+                    <div class="filter-group">
+                      <label>Filter by Test:</label>
+                      <select [(ngModel)]="selectedTestFilter">
+                        <option value="">All Tests</option>
+                        <option *ngFor="let test of tests" [value]="test.id">{{ test.name }}</option>
+                      </select>
+                    </div>
+                    
+                    <button (click)="clearFilters()" class="clear-btn">Clear Filters</button>
+                  </div>
+                  
+                  <div class="marks-table-container" *ngIf="marks.length > 0">
+                    <table class="marks-table">
+                      <thead>
+                        <tr>
+                          <th>Subject</th>
+                          <th>Test</th>
+                          <th>Marks</th>
+                          <th>Percentage</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr *ngFor="let mark of marks | markFilter:selectedSubjectFilter:selectedTestFilter">
+                          <td>{{ getSubjectName(mark.subjectId, subjects) }}</td>
+                          <td>{{ getTestName(mark.testId, tests) }}</td>
+                          <td>{{ mark.marks }}/{{ mark.maximumMarks }}</td>
+                          <td>
+                            <div class="percentage-bar">
+                              <div class="percentage-fill" 
+                                  [style.width.%]="getPercentage(mark)"
+                                  [ngClass]="{
+                                    'high': getPercentage(mark) >= 75,
+                                    'medium': getPercentage(mark) >= 50 && getPercentage(mark) < 75,
+                                    'low': getPercentage(mark) < 50
+                                  }">
+                              </div>
+                              <span>{{ getPercentage(mark) | number:'1.0-0' }}%</span>
+                            </div>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                  
+                  <!-- Performance Summary -->
+                  <div class="performance-summary" *ngIf="marks.length > 0">
+                    <h3>Performance Summary</h3>
+                    <div class="summary-stats">
+                      <div class="summary-item">
+                        <div class="summary-value">{{ getAverageMarks(marks) | number:'1.0-0' }}%</div>
+                        <div class="summary-label">Overall Average</div>
+                      </div>
+                      
+                      <div *ngFor="let subject of subjects" class="summary-item">
+                        <div class="summary-value">
+                          {{ getAverageMarks(marks, subject.id) | number:'1.0-0' }}%
+                        </div>
+                        <div class="summary-label">{{ subject.name }}</div>
+                      </div>
+                    </div>
+                  </div>
+                </ng-container>
+              </ng-container>
+            </ng-container>
+          </div>
+        </div>
+  
+        <!-- Upcoming Tests Card -->
+        <div class="dashboard-card upcoming-card">
+          <div class="card-header">
+            <h2>Upcoming Tests</h2>
+          </div>
+          <div class="card-body">
+            <ng-container *ngIf="(userTests$ | async) as tests">
+              <div *ngIf="tests.length === 0" class="no-data">
+                No upcoming tests.
+              </div>
+              
+              <div *ngFor="let test of getLatestTests(tests)" class="upcoming-test">
+                <div class="test-date">{{ test.date | date:'mediumDate' }}</div>
+                <div class="test-info">
+                  <h4>{{ test.name }}</h4>
+                  <p>{{ test.description }}</p>
+                  <span class="test-status" [ngClass]="test.status">{{ test.status }}</span>
+                </div>
+              </div>
+            </ng-container>
+          </div>
+        </div>
+      </div>
+    </ng-container>
+  
+    <ng-template #notLoggedIn>
+      <div class="not-logged-in">
+        <h2>Please log in to view your dashboard</h2>
+        <button routerLink="/login">Login</button>
+      </div>
+    </ng-template>
+  </div>

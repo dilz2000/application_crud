@@ -1,0 +1,64 @@
+<div class="container-fluid min-vh-100" style="background-color: #4C6EF5;">
+  <div class="d-flex justify-content-center align-items-center min-vh-100">
+    <div class="card shadow-lg p-4" style="border-radius: 20px; background-color: #EAF0FF; width: 600px;"> <!-- Increased width -->
+      <!-- Logo and Company Name -->
+      <div class="text-center mb-4">
+        <img src="assets/logo.png" alt="Logo" style="width: 100px; height: 100px;">
+        <h1 class="text-primary fw-bold mt-3">Academix</h1>
+        <h3 class="text-primary fw-bold">Login</h3>
+      </div>
+
+      <!-- Login Form -->
+      <form (ngSubmit)="login()">
+        <div class="mb-3">
+          <label class="form-label text-muted fw-bold" style="font-size: 1.2rem" for="username">Username</label>
+          <input
+            type="text"
+            id="username"
+            class="form-control form-control-lg"
+            placeholder="Enter username"
+            [(ngModel)]="email"
+            name="email"
+          />
+        </div>
+        <div class="mb-4">
+          <label class="form-label text-muted fw-bold" style="font-size: 1.2rem" for="password">Password</label>
+          <input
+            type="password"
+            id="password"
+            class="form-control form-control-lg"
+            placeholder="Enter password"
+            [(ngModel)]="password"
+            name="password"
+          />
+        </div>
+
+        <div class="d-grid">
+          <button
+            type="submit"
+            class="btn btn-primary btn-lg"
+            [disabled]="loading"
+          >
+            {{ loading ? 'Signing In...' : 'Login' }}
+          </button>
+        </div>
+      </form>
+
+      <!-- Links -->
+      <div class="d-flex justify-content-between align-items-center mt-4" style="font-size: 1.2rem;">
+        <a
+          routerLink="/register"
+          class="text-primary text-decoration-none fw-bold"
+        >
+          Create Account
+        </a>
+        <a
+          routerLink="/forgot-password"
+          class="text-primary text-decoration-none fw-bold"
+        >
+          Forgot Password?
+        </a>
+      </div>
+    </div>
+  </div>
+</div>

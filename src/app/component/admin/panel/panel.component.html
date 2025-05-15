@@ -1,0 +1,177 @@
+<div class="container">
+  <!-- ✅ Admin List -->
+  <h3 class="mb-3 text-primary">Admin List</h3>
+  <div class="card shadow mb-4">
+    <div class="card-body">
+      <!-- 🔍 Search Bar -->
+      <input type="text" class="form-control mb-3" placeholder="Search Admins" [formControl]="searchAdmin">
+
+      <div class="table-responsive">
+        <table class="table table-bordered">
+          <thead class="table-dark">
+            <tr>
+              <th>Name</th>
+              <th>Phone</th>
+              <th>Email</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let user of filterUsers((admins$ | async) || [], searchAdmin.value ?? '')">
+              <td>{{ user.name || 'N/A' }}</td>
+              <td>{{ user.phone || 'N/A' }}</td>
+              <td>{{ user.email || 'N/A' }}</td>
+              <td>
+                <button class="btn btn-warning btn-sm" (click)="toggleAdmin(user.sid, true)">
+                  <i class="fas fa-user-minus"></i>
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ✅ User List -->
+  <h3 class="mb-3 text-success">User List</h3>
+  <div class="card shadow mb-4">
+    <div class="card-body">
+      <!-- 🔍 Search Bar -->
+      <input type="text" class="form-control mb-3" placeholder="Search Users" [formControl]="searchUser">
+
+      <div class="table-responsive">
+        <table class="table table-bordered">
+          <thead class="table-success">
+            <tr>
+              <th>User ID</th>
+              <th>Name</th>
+              <th>Phone</th>
+              <th>Email</th>
+              <th>Grade</th>
+              <th>Class</th>
+              <th>Medium</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let user of filterUsers((users$ | async) || [], searchUser.value ?? '')">
+              <td>
+                <input type="text" class="form-control form-control-sm"
+                  [ngModel]="user?.sid"
+                  placeholder="Not Set"
+                  (blur)="updateStudentID($event, user)">
+              </td>
+              <td>{{ user.name || 'N/A' }}</td>
+              <td>{{ user.phone || 'N/A' }}</td>
+              <td>{{ user.email || 'N/A' }}</td>
+              <td>{{ user.grade || 'N/A' }}</td>
+              <td>{{ user.class || 'N/A' }}</td>
+              <td>{{ user.medium || 'N/A' }}</td>
+              <td>
+                <button class="btn btn-primary btn-sm" (click)="toggleAdmin(user.sid, false)">
+                  <i class="fas fa-user-plus"></i>
+                </button>
+                <button class="btn btn-danger btn-sm" (click)="deleteUser(user.sid)">
+                  <i class="fas fa-trash"></i>
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ✅ Pending Users -->
+  <h3 class="mb-3 text-danger">Pending Users</h3>
+  <div class="card shadow mb-4">
+    <div class="card-body">
+      <!-- 🔍 Search Bar -->
+      <input type="text" class="form-control mb-3" placeholder="Search Pending Users" [formControl]="searchPending">
+
+      <div class="table-responsive">
+        <table class="table table-bordered">
+          <thead class="table-danger">
+            <tr>
+              <th>Name</th>
+              <th>Phone</th>
+              <th>Email</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let user of filterUsers((pendingUsers$ | async) || [], searchPending.value ?? '')">
+              <td>{{ user.name || 'N/A' }}</td>
+              <td>{{ user.phone || 'N/A' }}</td>
+              <td>{{ user.email || 'N/A' }}</td>
+              <td>
+                <button class="btn btn-success btn-sm me-2" (click)="openApprovalModal(user)">
+                  <i class="fas fa-check"></i>
+                </button>
+                <button class="btn btn-danger btn-sm" (click)="deleteUser(user.sid)">
+                  <i class="fas fa-trash"></i>
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+
+ <!-- Grade and Class Assignment Modal -->
+ <div class="modal" tabindex="-1" [ngClass]="{'d-block': showApprovalModal}" [ngStyle]="{'display': showApprovalModal ? 'block' : 'none', 'background-color': 'rgba(0,0,0,0.5)'}">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Assign Grade, Class & Medium</h5>
+        <button type="button" class="btn-close" (click)="closeApprovalModal()"></button>
+      </div>
+      <div class="modal-body">
+        <form [formGroup]="approvalForm">
+          <div class="mb-3">
+            <p><strong>User:</strong> {{ selectedUser?.name }}</p>
+            <p><strong>Email:</strong> {{ selectedUser?.email }}</p>
+          </div>
+          <div class="mb-3">
+            <label for="grade" class="form-label">Grade</label>
+            <select class="form-select" id="grade" formControlName="grade">
+              <option value="">Select Grade</option>
+              <option *ngFor="let grade of availableGrades" [value]="grade">{{ grade }}</option>
+            </select>
+            <div *ngIf="approvalForm.get('grade')?.invalid && approvalForm.get('grade')?.touched" class="text-danger">
+              Grade is required
+            </div>
+          </div>
+          <div class="mb-3">
+            <label for="class" class="form-label">Class</label>
+            <select class="form-select" id="class" formControlName="class">
+              <option value="">Select Class</option>
+              <option *ngFor="let class of availableClasses" [value]="class">{{ class }}</option>
+            </select>
+            <div *ngIf="approvalForm.get('class')?.invalid && approvalForm.get('class')?.touched" class="text-danger">
+              Class is required
+            </div>
+          </div>
+          <div class="mb-3">
+            <label for="medium" class="form-label">Medium</label>
+            <select class="form-select" id="medium" formControlName="medium">
+              <option value="">Select Medium</option>
+              <option *ngFor="let medium of availableMediums" [value]="medium">{{ medium }}</option>
+            </select>
+            <div *ngIf="approvalForm.get('medium')?.invalid && approvalForm.get('medium')?.touched" class="text-danger">
+              Medium is required
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="closeApprovalModal()">Cancel</button>
+        <button type="button" class="btn btn-primary" [disabled]="approvalForm.invalid" (click)="submitApproval()">Approve User</button>
+      </div>
+    </div>
+  </div>
+</div>
+</div>

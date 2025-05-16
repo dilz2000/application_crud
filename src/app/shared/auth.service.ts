@@ -44,7 +44,7 @@ export class AuthService {
         const isAdmin = userData?.roles?.admin || false;
   
         // Redirect based on role
-        const redirectRoute = isAdmin ? '/admin/panel' : '/dashboard';
+        const redirectRoute = isAdmin ? '/admin/panel' : '/student-dashboard';
         this.router.navigate([redirectRoute]);
       }));
   }

@@ -7,6 +7,8 @@ import { UserData } from 'src/app/models/user-data';
 import { Test } from 'src/app/models/test';
 import { TestMark } from 'src/app/models/test-mark';
 import { Subject } from 'src/app/models/subject';
+import firebase from 'firebase/compat/app';
+import 'firebase/compat/firestore';
 
 @Component({
   selector: 'app-student-dashboard',
@@ -69,7 +71,7 @@ export class StudentDashboardComponent implements OnInit {
           return combineLatest(
             subjectBatches.map(batch => 
               this.firestore.collection<Subject>('subjects', 
-                ref => ref.where('id', 'in', batch))
+                ref => ref.where(firebase.firestore.FieldPath.documentId(), 'in', batch))
                 .valueChanges({ idField: 'id' })
             )
           ).pipe(

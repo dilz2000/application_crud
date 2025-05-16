@@ -37,7 +37,7 @@ export class AdminUpdatesComponent implements OnInit {
   currentItemId: string | null | undefined = null;
 
   // ImgBB API key
-  private readonly IMGBB_API_KEY = '0158fdab84f7832034fd8b4f4728b1fd';
+  private readonly IMGBB_API_KEY = '97c30984e171c48da6935866b7c4a261';
 
   constructor(private firestore: AngularFirestore, private http: HttpClient) {
     // Initialize Firestore collections

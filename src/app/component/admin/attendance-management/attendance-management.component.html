@@ -12,7 +12,7 @@
         </div>
       </div>
     </div>
-  
+
     <!-- Attendance Selection Section -->
     <div class="card shadow mb-4">
       <div class="card-header py-3">
@@ -23,7 +23,7 @@
           <div class="col-md-4">
             <label for="date" class="form-label">Date</label>
             <input type="date" id="date" class="form-control" formControlName="date" 
-                   [value]="selectionForm.get('date')?.value | date:'yyyy-MM-dd'">
+                  [value]="selectionForm.get('date')?.value | date:'yyyy-MM-dd'">
           </div>
           <div class="col-md-4">
             <label for="grade" class="form-label">Grade</label>
@@ -42,9 +42,16 @@
         </form>
       </div>
     </div>
-  
+
+    <!-- Loading indicator -->
+    <div class="d-flex justify-content-center my-4" *ngIf="loading">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Loading...</span>
+      </div>
+    </div>
+
     <!-- Mark Attendance Section -->
-    <div class="card shadow mb-4" *ngIf="selectionForm.valid">
+    <div class="card shadow mb-4" *ngIf="selectionForm.valid && !loading">
       <ng-container *ngIf="students$ | async as students">
         <div *ngIf="students.length > 0">
           <div class="card-header py-3 d-flex justify-content-between align-items-center">
@@ -104,7 +111,7 @@
         </div>
       </ng-container>
     </div>
-  
+
     <!-- Attendance Records Filter Section -->
     <div class="card shadow mb-4">
       <div class="card-header py-3 d-flex justify-content-between align-items-center">
@@ -123,12 +130,12 @@
           <div class="col-md-3">
             <label for="startDate" class="form-label">Start Date</label>
             <input type="date" id="startDate" class="form-control" formControlName="startDate"
-                   [value]="filterForm.get('startDate')?.value | date:'yyyy-MM-dd'">
+                  [value]="filterForm.get('startDate')?.value | date:'yyyy-MM-dd'">
           </div>
           <div class="col-md-3">
             <label for="endDate" class="form-label">End Date</label>
             <input type="date" id="endDate" class="form-control" formControlName="endDate"
-                   [value]="filterForm.get('endDate')?.value | date:'yyyy-MM-dd'">
+                  [value]="filterForm.get('endDate')?.value | date:'yyyy-MM-dd'">
           </div>
           <div class="col-md-2">
             <label for="filterGrade" class="form-label">Grade</label>
@@ -156,9 +163,16 @@
             <input type="text" id="filterStudentId" class="form-control" placeholder="Search by Student ID or Name" formControlName="studentId">
           </div>
         </form>
-  
+
+        <!-- Loading indicator for records -->
+        <div class="d-flex justify-content-center my-4" *ngIf="loading">
+          <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
+          </div>
+        </div>
+
         <ng-container *ngIf="attendanceRecords$ | async as records">
-          <div class="table-responsive">
+          <div class="table-responsive" *ngIf="!loading">
             <table class="table table-bordered table-hover">
               <thead class="table-light">
                 <tr>
@@ -193,14 +207,18 @@
               </tbody>
             </table>
           </div>
-  
+
           <!-- No Records Message -->
-          <div class="text-center mt-3" *ngIf="records.length === 0">
+          <div class="text-center mt-3" *ngIf="records.length === 0 && !loading">
             <p class="lead text-muted">No attendance records found matching your filters</p>
+            <p *ngIf="!filterForm.get('grade')?.value && !filterForm.get('class')?.value && 
+                    !filterForm.get('status')?.value && !filterForm.get('studentId')?.value">
+              Use the filters above to search for attendance records
+            </p>
           </div>
-  
+
           <!-- Statistics Card -->
-          <div class="card shadow mt-4">
+          <div class="card shadow mt-4" *ngIf="records.length > 0 && !loading">
             <div class="card-header py-3">
               <h5 class="m-0 font-weight-bold text-primary">Attendance Statistics</h5>
             </div>

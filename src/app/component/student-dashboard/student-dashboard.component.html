@@ -1,197 +1,284 @@
+<!-- student-dashboard.component.html -->
 <div class="dashboard-container">
-    <div *ngIf="loading" class="loading-overlay">
-      <div class="spinner"></div>
-      <p>Loading your dashboard...</p>
+  <div *ngIf="loading" class="loading-overlay">
+    <div class="spinner"></div>
+    <p>Loading your dashboard...</p>
+  </div>
+
+  <ng-container *ngIf="(currentUser$ | async) as user; else notLoggedIn">
+    <header class="dashboard-header">
+      <div class="user-info">
+        <h1>Welcome, {{ user.name }}</h1>
+        <p>{{ user.grade }} | {{ user.class }} | ID: {{ user.sid }}</p>
+      </div>
+    </header>
+
+    <div class="dashboard-grid">
+      <!-- Attendance Summary -->
+      <div class="dashboard-card attendance-card light-blue">
+        <div class="card-header">
+          <h2>Attendance Summary</h2>
+        </div>
+        <div class="card-body">
+          <div class="attendance-stats">
+            <div class="stat-item">
+              <div class="stat-value overall-rate">{{ attendanceRate | number:'1.0-0' }}%</div>
+              <div class="stat-label">Overall</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-value present-value">{{ daysPresent }}</div>
+              <div class="stat-label">Days Present</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-value absent-value">{{ totalDays - daysPresent }}</div>
+              <div class="stat-label">Days Absent</div>
+            </div>
+          </div>
+
+          <div class="current-month">
+            <h3>This Month</h3>
+            <div class="month-stats">
+              <div class="month-stat month-present">
+                Present: {{ getCurrentMonthAttendance().present }}
+              </div>
+              <div class="month-stat month-absent">
+                Absent: {{ getCurrentMonthAttendance().absent }}
+              </div>
+            </div>
+          </div>
+
+          <div class="attendance-calendar" *ngIf="attendanceData.length > 0">
+            <h3>Recent Attendance</h3>
+            <div class="calendar-days">
+              <div *ngFor="let day of attendanceData.slice(-14)"
+                   [ngClass]="{ 'present': day.status, 'absent': !day.status }"
+                   class="calendar-day">
+                <div class="day-date">{{ day.date | date:'d' }}</div>
+                <div class="day-status">{{ day.status ? 'P' : 'A' }}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="attendance-filter-wrapper">
+        <div class="attendance-filters">
+        <div class="filter-group">
+          <label>Filter by Year:</label>
+          <select [(ngModel)]="selectedYear" class="form-select">
+            <option *ngFor="let year of availableYears" [value]="year">{{ year }}</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <label>Filter by Month:</label>
+          <select [(ngModel)]="selectedMonth" class="form-select">
+            <option value="">All Months</option>
+            <option *ngFor="let month of months" [value]="month">{{ month }}</option>
+          </select>
+        </div>
+      </div>
+      <div class="calendar-days">
+        <div *ngFor="let day of getFilteredAttendanceData().slice(-14)"
+            [ngClass]="{ 'present': day.status, 'absent': !day.status }"
+            class="calendar-day">
+          <div class="day-date">{{ day.date | date:'d' }}</div>
+          <div class="day-status">{{ day.status ? 'P' : 'A' }}</div>
+        </div>
+      </div>
+      <div class="month-stats">
+      <div class="month-stat month-present">
+        Present: {{ getMonthStats().present }}
+      </div>
+      <div class="month-stat month-absent">
+        Absent: {{ getMonthStats().absent }}
+      </div>
     </div>
-  
-    <ng-container *ngIf="(currentUser$ | async) as user; else notLoggedIn">
-      <header class="dashboard-header">
-        <div class="user-info">
-          <h1>Welcome, {{ user.name }}</h1>
-          <p>{{ user.grade }} | {{ user.class }} | ID: {{ user.sid }}</p>
+      </div>
+
+        
+
+
+      </div>
+
+      <!-- Subjects -->
+      <div class="dashboard-card subjects-card light-green">
+        <div class="card-header">
+          <h2>My Subjects</h2>
         </div>
-      </header>
-  
-      <div class="dashboard-grid">
-        <!-- Attendance Summary Card -->
-        <div class="dashboard-card attendance-card">
-          <div class="card-header">
-            <h2>Attendance Summary</h2>
-          </div>
-          <div class="card-body">
-            <div class="attendance-stats">
-              <div class="stat-item">
-                <div class="stat-value">{{ attendanceRate | number:'1.0-0' }}%</div>
-                <div class="stat-label">Overall</div>
-              </div>
-              <div class="stat-item">
-                <div class="stat-value">{{ daysPresent }}</div>
-                <div class="stat-label">Days Present</div>
-              </div>
-              <div class="stat-item">
-                <div class="stat-value">{{ totalDays - daysPresent }}</div>
-                <div class="stat-label">Days Absent</div>
-              </div>
+        <div class="card-body">
+          <ng-container *ngIf="(userSubjects$ | async) as subjects">
+            <div *ngIf="subjects.length === 0" class="no-data">No subjects assigned yet.</div>
+            <div *ngFor="let subject of subjects" class="subject-item">
+              <div class="subject-code">{{ subject.code }}</div>
+              <div class="subject-name">{{ subject.name }}</div>
             </div>
-  
-            <div class="current-month">
-              <h3>This Month</h3>
-              <div class="month-stats">
-                <div class="month-present">Present: {{ getCurrentMonthAttendance().present }}</div>
-                <div class="month-absent">Absent: {{ getCurrentMonthAttendance().absent }}</div>
-              </div>
-            </div>
-  
-            <div class="attendance-calendar" *ngIf="attendanceData.length > 0">
-              <h3>Recent Attendance</h3>
-              <div class="calendar-days">
-                <div *ngFor="let day of attendanceData.slice(-14)" 
-                    [ngClass]="{'present': day.status, 'absent': !day.status}"
-                    class="calendar-day">
-                  <div class="day-date">{{ day.date | date:'d' }}</div>
-                  <div class="day-status">{{ day.status ? 'P' : 'A' }}</div>
-                </div>
-              </div>
-            </div>
-          </div>
+          </ng-container>
         </div>
-  
-        <!-- Subjects Card -->
-        <div class="dashboard-card subjects-card">
-          <div class="card-header">
-            <h2>My Subjects</h2>
-          </div>
-          <div class="card-body">
+      </div>
+
+      <!-- Tests -->
+      <div class="dashboard-card upcoming-card">
+        <div class="card-header">
+          <h2>Tests</h2>
+        </div>
+        <div class="card-body">
+          <ng-container *ngIf="(userTests$ | async) as tests">
+            <div *ngIf="tests.length === 0" class="no-data">No upcoming tests.</div>
+            <div *ngFor="let test of getLatestTests(tests)" class="upcoming-test">
+              <div class="test-date">{{ test.date | date:'mediumDate' }}</div>
+              <div class="test-info">
+                <h4>{{ test.name }}</h4>
+                <p>{{ test.description }}</p>
+                <span class="test-status" [ngClass]="test.status">{{ test.status }}</span>
+              </div>
+            </div>
+          </ng-container>
+        </div>
+      </div>
+
+      <!-- Test Performance -->
+      <div class="dashboard-card performance-card light-purple">
+        <div class="card-header">
+          <h2>Test Performance</h2>
+        </div>
+        <div class="card-body">
+          <ng-container *ngIf="(userMarks$ | async) as marks">
             <ng-container *ngIf="(userSubjects$ | async) as subjects">
-              <div *ngIf="subjects.length === 0" class="no-data">
-                No subjects assigned yet.
-              </div>
-              <div *ngFor="let subject of subjects" class="subject-item">
-                <div class="subject-code">{{ subject.code }}</div>
-                <div class="subject-name">{{ subject.name }}</div>
-              </div>
-            </ng-container>
-          </div>
-        </div>
-  
-        <!-- Test Performance Card -->
-        <div class="dashboard-card performance-card">
-          <div class="card-header">
-            <h2>Test Performance</h2>
-          </div>
-          <div class="card-body">
-            <ng-container *ngIf="(userMarks$ | async) as marks">
-              <ng-container *ngIf="(userSubjects$ | async) as subjects">
-                <ng-container *ngIf="(userTests$ | async) as tests">
-                  <div *ngIf="marks.length === 0" class="no-data">
-                    No test marks available yet.
+              <ng-container *ngIf="(userTests$ | async) as tests">
+                <div *ngIf="marks.length === 0" class="no-data">No test marks available yet.</div>
+                <div class="filter-container" *ngIf="marks.length > 0">
+                  <div class="filter-group">
+                    <label>Filter by Subject:</label>
+                    <select [(ngModel)]="selectedSubjectFilter">
+                      <option value="">All Subjects</option>
+                      <option *ngFor="let subject of subjects" [value]="subject.id">{{ subject.name }}</option>
+                    </select>
                   </div>
-                  
-                  <div class="filters" *ngIf="marks.length > 0">
-                    <div class="filter-group">
-                      <label>Filter by Subject:</label>
-                      <select [(ngModel)]="selectedSubjectFilter">
-                        <option value="">All Subjects</option>
-                        <option *ngFor="let subject of subjects" [value]="subject.id">{{ subject.name }}</option>
-                      </select>
+                  <div class="filter-group">
+                    <label>Filter by Test:</label>
+                    <select [(ngModel)]="selectedTestFilter">
+                      <option value="">All Tests</option>
+                      <option *ngFor="let test of tests" [value]="test.id">{{ test.name }}</option>
+                    </select>
+                  </div>
+                  <button (click)="clearFilters()" class="clear-btn">Clear Filters</button>
+                </div>
+                <div class="marks-table-container" *ngIf="marks.length > 0">
+                  <table class="marks-table">
+                    <thead>
+                      <tr>
+                        <th>Subject</th>
+                        <th>Test</th>
+                        <th>Marks</th>
+                        <th>Percentage</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr *ngFor="let mark of marks | markFilter:selectedSubjectFilter:selectedTestFilter">
+                        <td>{{ getSubjectName(mark.subjectId, subjects) }}</td>
+                        <td>{{ getTestName(mark.testId, tests) }}</td>
+                        <td>{{ mark.marks }}/{{ mark.maximumMarks }}</td>
+                        <td>
+                          <div class="percentage-bar">
+                            <div class="percentage-fill"
+                                 [style.width.%]="getPercentage(mark)"
+                                 [ngClass]="{
+                                   'high': getPercentage(mark) >= 75,
+                                   'medium': getPercentage(mark) >= 50 && getPercentage(mark) < 75,
+                                   'low': getPercentage(mark) < 50
+                                 }"></div>
+                            <span class="percentage-text">{{ getPercentage(mark) | number:'1.0-0' }}%</span>
+                          </div>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+                <div class="performance-summary" *ngIf="marks.length > 0">
+                  <h3>Performance Summary</h3>
+                  <div class="summary-stats">
+                    <div class="summary-item">
+                      <div class="summary-value">{{ getAverageMarks(marks) | number:'1.0-0' }}%</div>
+                      <div class="summary-label">Overall Average</div>
                     </div>
-                    
-                    <div class="filter-group">
-                      <label>Filter by Test:</label>
-                      <select [(ngModel)]="selectedTestFilter">
-                        <option value="">All Tests</option>
-                        <option *ngFor="let test of tests" [value]="test.id">{{ test.name }}</option>
-                      </select>
-                    </div>
-                    
-                    <button (click)="clearFilters()" class="clear-btn">Clear Filters</button>
-                  </div>
-                  
-                  <div class="marks-table-container" *ngIf="marks.length > 0">
-                    <table class="marks-table">
-                      <thead>
-                        <tr>
-                          <th>Subject</th>
-                          <th>Test</th>
-                          <th>Marks</th>
-                          <th>Percentage</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        <tr *ngFor="let mark of marks | markFilter:selectedSubjectFilter:selectedTestFilter">
-                          <td>{{ getSubjectName(mark.subjectId, subjects) }}</td>
-                          <td>{{ getTestName(mark.testId, tests) }}</td>
-                          <td>{{ mark.marks }}/{{ mark.maximumMarks }}</td>
-                          <td>
-                            <div class="percentage-bar">
-                              <div class="percentage-fill" 
-                                  [style.width.%]="getPercentage(mark)"
-                                  [ngClass]="{
-                                    'high': getPercentage(mark) >= 75,
-                                    'medium': getPercentage(mark) >= 50 && getPercentage(mark) < 75,
-                                    'low': getPercentage(mark) < 50
-                                  }">
-                              </div>
-                              <span>{{ getPercentage(mark) | number:'1.0-0' }}%</span>
-                            </div>
-                          </td>
-                        </tr>
-                      </tbody>
-                    </table>
-                  </div>
-                  
-                  <!-- Performance Summary -->
-                  <div class="performance-summary" *ngIf="marks.length > 0">
-                    <h3>Performance Summary</h3>
-                    <div class="summary-stats">
-                      <div class="summary-item">
-                        <div class="summary-value">{{ getAverageMarks(marks) | number:'1.0-0' }}%</div>
-                        <div class="summary-label">Overall Average</div>
-                      </div>
-                      
-                      <div *ngFor="let subject of subjects" class="summary-item">
-                        <div class="summary-value">
-                          {{ getAverageMarks(marks, subject.id) | number:'1.0-0' }}%
-                        </div>
-                        <div class="summary-label">{{ subject.name }}</div>
-                      </div>
+                    <div *ngFor="let subject of subjects" class="summary-item">
+                      <div class="summary-value">{{ getAverageMarks(marks, subject.id) | number:'1.0-0' }}%</div>
+                      <div class="summary-label">{{ subject.name }}</div>
                     </div>
                   </div>
-                </ng-container>
+                </div>
               </ng-container>
             </ng-container>
-          </div>
+          </ng-container>
         </div>
-  
-        <!-- Upcoming Tests Card -->
-        <div class="dashboard-card upcoming-card">
-          <div class="card-header">
-            <h2>Tests</h2>
-          </div>
-          <div class="card-body">
-            <ng-container *ngIf="(userTests$ | async) as tests">
-              <div *ngIf="tests.length === 0" class="no-data">
-                No upcoming tests.
-              </div>
-              
-              <div *ngFor="let test of getLatestTests(tests)" class="upcoming-test">
-                <div class="test-date">{{ test.date | date:'mediumDate' }}</div>
-                <div class="test-info">
-                  <h4>{{ test.name }}</h4>
-                  <p>{{ test.description }}</p>
-                  <span class="test-status" [ngClass]="test.status">{{ test.status }}</span>
-                </div>
-              </div>
-            </ng-container>
+      </div>
+
+      <!-- Payments Card -->
+      <div class="dashboard-card payments-card light-yellow">
+        <div class="card-header d-flex justify-content-between align-items-center">
+          <h2>Payments</h2>
+          <select [(ngModel)]="selectedPaymentYear" class="form-select" style="width: auto;">
+            <option *ngFor="let year of availableYears" [value]="year">{{ year }}</option>
+          </select>
+        </div>
+        <div class="card-body">
+          <div class="payment-grid">
+            <div *ngFor="let month of months"
+                [ngClass]="{
+                  'payment-item': true,
+                  'paid': userPayments[selectedPaymentYear] && userPayments[selectedPaymentYear][month],
+                  'unpaid': !userPayments[selectedPaymentYear] || !userPayments[selectedPaymentYear][month]
+                }">
+              <strong>{{ month }}</strong>
+              <span class="status">
+                {{ userPayments[selectedPaymentYear] && userPayments[selectedPaymentYear][month] ? 'Paid' : 'Unpaid' }}
+              </span>
+            </div>
           </div>
         </div>
       </div>
-    </ng-container>
-  
-    <ng-template #notLoggedIn>
-      <div class="not-logged-in">
-        <h2>Please log in to view your dashboard</h2>
-        <button routerLink="/login">Login</button>
+
+
+      <!-- Notifications -->  
+      
+
+    </div>
+  </ng-container>
+
+  <ng-template #notLoggedIn>
+    <div class="not-logged-in">
+      <h2>Please log in to view your dashboard</h2>
+      <button routerLink="/login">Login</button>
+    </div>
+  </ng-template>
+
+  <footer class="bg-dark text-white py-4">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-4 mb-3 mb-md-0">
+          <h5 class="fw-bold mb-3">Academix</h5>
+          <p>Providing quality education since 2010. Our mission is to empower students with knowledge and skills for a brighter future.</p>
+        </div>
+        <div class="col-md-4 mb-3 mb-md-0">
+          <h5 class="fw-bold mb-3">Quick Links</h5>
+          <ul class="list-unstyled">
+            <li><a href="#" class="text-white text-decoration-none">About Us</a></li>
+            <li><a href="#" class="text-white text-decoration-none">Courses</a></li>
+            <li><a href="#" class="text-white text-decoration-none">Events</a></li>
+            <li><a href="#" class="text-white text-decoration-none">Contact</a></li>
+          </ul>
+        </div>
+        <div class="col-md-4">
+          <h5 class="fw-bold mb-3">Contact Us</h5>
+          <p>
+            123 Education Street<br>
+            Learning City, ED 12345<br>
+            <a href="mailto:info@academix.com" class="text-white">info&#64;academix.com</a><br>
+            +1 (555) 123-4567
+          </p>
+        </div>
       </div>
-    </ng-template>
-  </div>
+      <div class="text-center mt-4">
+        <p class="mb-0">© 2025 Academix. All rights reserved.</p>
+      </div>
+    </div>
+  </footer>
+</div>

@@ -17,5 +17,10 @@ export interface UserData {
     admin?: boolean;
     user?: boolean;
   };
+  payments?: {
+    [year: string]: {
+      [month: string]: boolean;
+    };
+  };
   //createdAt: firebase.firestore.Timestamp | firebase.firestore.FieldValue;
 }
